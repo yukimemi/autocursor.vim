@@ -5,8 +5,8 @@ let debug = false;
 
 const cursorline = "cursorline";
 const cursorcolumn = "cursorcolumn";
-const lineWait = 900;
-const columnWait = 1000;
+const lineWait = 500;
+const columnWait = 500;
 
 type Event = {
   name: AutocmdEvent;
@@ -21,7 +21,7 @@ type Cursor = {
   events: Event[];
 };
 
-const cfgLine: Cursor = {
+let cfgLine: Cursor = {
   enable: true,
   option: cursorline,
   state: false,
@@ -63,7 +63,7 @@ const cfgLine: Cursor = {
     },
   ],
 };
-const cfgColumn: Cursor = {
+let cfgColumn: Cursor = {
   enable: true,
   option: cursorcolumn,
   state: false,
@@ -122,8 +122,34 @@ start(async (vim) => {
 
   // User option.
   try {
-    const userCfg = await vim.g.get("autocursor_cursorline");
-    clog(userCfg);
+    const userCfgLine = (await vim.g.get("autocursor_cursorline")) as Cursor;
+    clog({ userCfgLine });
+    const lineEvents = cfgLine.events.filter(
+      (x) => !userCfgLine.events.some((y) => y.name === x.name)
+    );
+    cfgLine = {
+      ...cfgLine,
+      ...userCfgLine,
+      events: [...lineEvents, ...userCfgLine.events],
+    };
+    clog({ cfgLine });
+  } catch (e) {
+    clog(e);
+  }
+  try {
+    const userCfgColumn = (await vim.g.get(
+      "autocursor_cursorcolumn"
+    )) as Cursor;
+    clog({ userCfgColumn });
+    const columnEvents = cfgLine.events.filter(
+      (x) => !userCfgColumn.events.some((y) => y.name === x.name)
+    );
+    cfgColumn = {
+      ...cfgColumn,
+      ...userCfgColumn,
+      events: [...columnEvents, ...userCfgColumn.events],
+    };
+    clog({ cfgColumn });
   } catch (e) {
     clog(e);
   }
@@ -194,10 +220,10 @@ start(async (vim) => {
   });
 
   await vim.execute(`
-    command! EnableAutoCursorLine call denops#notify('${vim.name}', 'changeCursorLine', [v:true])
-    command! EnableAutoCursorColumn call denops#notify('${vim.name}', 'changeCursorColumn', [v:true])
-    command! DisableAutoCursorLine call denops#notify('${vim.name}', 'changeCursorLine', [v:false])
-    command! DisableAutoCursorColumn call denops#notify('${vim.name}', 'changeCursorColumn', [v:false])
+    command! EnableAutoCursorLine call denops#notify('${vim.name}', 'changeCursor', [v:true, "cursorline"])
+    command! EnableAutoCursorColumn call denops#notify('${vim.name}', 'changeCursor', [v:true, "cursorcolumn"])
+    command! DisableAutoCursorLine call denops#notify('${vim.name}', 'changeCursor', [v:false, "cursorline"])
+    command! DisableAutoCursorColumn call denops#notify('${vim.name}', 'changeCursor', [v:false, "cursorcolumn"])
   `);
 
   clog("dps-autocursor has loaded");
