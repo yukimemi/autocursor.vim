@@ -175,16 +175,16 @@ start(async (vim) => {
           return;
         }
       }
+      if (o === cursorline) {
+        cfgLine.state = s;
+      }
+      if (o === cursorcolumn) {
+        cfgColumn.state = s;
+      }
       setTimeout(async () => {
         const option = s ? o : `no${o}`;
         clog(`setOption: set ${option}`);
         await vim.execute(`set ${option}`);
-        if (o === cursorline) {
-          cfgLine.state = s;
-        }
-        if (o === cursorcolumn) {
-          cfgColumn.state = s;
-        }
       }, w);
       return await Promise.resolve();
     },
