@@ -1,7 +1,5 @@
-import { start } from "https://deno.land/x/denops_std@v0.3/mod.ts";
+import { start } from "https://deno.land/x/denops_std@v0.4/mod.ts";
 import { AutocmdEvent } from "https://deno.land/x/denops_std@v0.3/vim/mod.ts";
-
-let debug = false;
 
 const cursorline = "cursorline";
 const cursorcolumn = "cursorcolumn";
@@ -106,19 +104,14 @@ let cfgColumn: Cursor = {
   ],
 };
 
-const clog = (...data: any[]): void => {
-  if (debug) {
-    console.log(...data);
-  }
-};
-
 start(async (vim) => {
   // debug.
-  try {
-    debug = await vim.g.get("autocursor_debug");
-  } catch (e) {
-    // console.log(e);
-  }
+  const debug = await vim.g.get("autocursor_debug", false);
+  const clog = (...data: any[]): void => {
+    if (debug) {
+      console.log(...data);
+    }
+  };
 
   // User option.
   try {
