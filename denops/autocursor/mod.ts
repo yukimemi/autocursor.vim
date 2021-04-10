@@ -1,5 +1,5 @@
-import { start } from "https://deno.land/x/denops_std@v0.4/mod.ts";
-import { AutocmdEvent } from "https://deno.land/x/denops_std@v0.3/vim/mod.ts";
+import { start } from "https://deno.land/x/denops_std@v0.7/mod.ts";
+import { AutocmdEvent } from "https://deno.land/x/denops_std@v0.7/vim/mod.ts";
 
 const cursorline = "cursorline";
 const cursorcolumn = "cursorcolumn";
