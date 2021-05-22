@@ -1,6 +1,4 @@
-import { main } from "https://deno.land/x/denops_std@v0.8/mod.ts";
-
-import { AutocmdEvent } from "https://deno.land/x/denops_std@v0.8/vim/mod.ts";
+import { AutocmdEvent, main } from "./deps.ts";
 
 const cursorline = "cursorline";
 const cursorcolumn = "cursorcolumn";
@@ -119,7 +117,7 @@ main(async ({ vim }) => {
     const userCfgLine = (await vim.g.get("autocursor_cursorline")) as Cursor;
     clog({ userCfgLine });
     const lineEvents = cfgLine.events.filter(
-      (x) => !userCfgLine.events.some((y) => y.name === x.name)
+      (x) => !userCfgLine.events.some((y) => y.name === x.name),
     );
     cfgLine = {
       ...cfgLine,
@@ -132,11 +130,11 @@ main(async ({ vim }) => {
   }
   try {
     const userCfgColumn = (await vim.g.get(
-      "autocursor_cursorcolumn"
+      "autocursor_cursorcolumn",
     )) as Cursor;
     clog({ userCfgColumn });
     const columnEvents = cfgLine.events.filter(
-      (x) => !userCfgColumn.events.some((y) => y.name === x.name)
+      (x) => !userCfgColumn.events.some((y) => y.name === x.name),
     );
     cfgColumn = {
       ...cfgColumn,
@@ -156,7 +154,7 @@ main(async ({ vim }) => {
       if (o === cursorline) {
         if (s === cfgLine.state || !cfgLine.enable) {
           clog(
-            `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`
+            `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
           );
           return;
         }
@@ -164,7 +162,7 @@ main(async ({ vim }) => {
       if (o === cursorcolumn) {
         if (s === cfgColumn.state || !cfgColumn.enable) {
           clog(
-            `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`
+            `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
           );
           return;
         }
@@ -207,7 +205,7 @@ main(async ({ vim }) => {
           "*",
           `call denops#notify('${vim.name}', 'setOption', [${
             e.set ? "v:true" : "v:false"
-          }, ${e.wait}, '${cfg.option}'])`
+          }, ${e.wait}, '${cfg.option}'])`,
         );
       });
     });
