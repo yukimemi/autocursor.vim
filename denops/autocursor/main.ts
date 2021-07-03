@@ -1,26 +1,26 @@
-import { AutocmdEvent, main } from "./deps.ts";
+import { autocmd, Denops, ensureNumber, execute, vars } from "./deps.ts";
 
-const cursorline = "cursorline";
-const cursorcolumn = "cursorcolumn";
 const lineWait = 500;
 const columnWait = 500;
 
+type LineOrColumn = "cursorline" | "cursorcolumn";
+
 type Event = {
-  name: AutocmdEvent;
+  name: autocmd.AutocmdEvent;
   set: boolean;
   wait: number;
 };
 
 type Cursor = {
   enable: boolean;
-  option: string;
+  option: LineOrColumn;
   state: boolean;
   events: Event[];
 };
 
 let cfgLine: Cursor = {
   enable: true,
-  option: cursorline,
+  option: "cursorline",
   state: false,
   events: [
     {
@@ -62,7 +62,7 @@ let cfgLine: Cursor = {
 };
 let cfgColumn: Cursor = {
   enable: true,
-  option: cursorcolumn,
+  option: "cursorcolumn",
   state: false,
   events: [
     {
@@ -103,9 +103,9 @@ let cfgColumn: Cursor = {
   ],
 };
 
-main(async ({ vim }) => {
+export async function main(denops: Denops): Promise<void> {
   // debug.
-  const debug = await vim.g.get("autocursor_debug", false);
+  const debug = await vars.g.get("autocursor_debug", false);
   const clog = (...data: any[]): void => {
     if (debug) {
       console.log(...data);
@@ -114,10 +114,10 @@ main(async ({ vim }) => {
 
   // User option.
   try {
-    const userCfgLine = (await vim.g.get("autocursor_cursorline")) as Cursor;
+    const userCfgLine = (await vars.g.get("autocursor_cursorline")) as Cursor;
     clog({ userCfgLine });
-    const lineEvents = cfgLine.events.filter(
-      (x) => !userCfgLine.events.some((y) => y.name === x.name),
+    const lineEvents = cfgLine.events.filter((x) =>
+      !userCfgLine.events.some((y) => y.name === x.name)
     );
     cfgLine = {
       ...cfgLine,
@@ -128,8 +128,9 @@ main(async ({ vim }) => {
   } catch (e) {
     clog(e);
   }
+
   try {
-    const userCfgColumn = (await vim.g.get(
+    const userCfgColumn = (await vars.g.get(
       "autocursor_cursorcolumn",
     )) as Cursor;
     clog({ userCfgColumn });
@@ -146,12 +147,13 @@ main(async ({ vim }) => {
     clog(e);
   }
 
-  vim.register({
-    async setOption(set: unknown, wait: unknown, option: unknown) {
+  denops.dispatcher = {
+    setOption(set: unknown, wait: unknown, option: unknown) {
+      ensureNumber(wait);
       const s = set as boolean;
       const w = wait as number;
-      const o = option as string;
-      if (o === cursorline) {
+      const o = option as LineOrColumn;
+      if (o === "cursorline") {
         if (s === cfgLine.state || !cfgLine.enable) {
           clog(
             `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
@@ -159,7 +161,7 @@ main(async ({ vim }) => {
           return;
         }
       }
-      if (o === cursorcolumn) {
+      if (o === "cursorcolumn") {
         if (s === cfgColumn.state || !cfgColumn.enable) {
           clog(
             `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
@@ -167,43 +169,41 @@ main(async ({ vim }) => {
           return;
         }
       }
-      if (o === cursorline) {
+      if (o === "cursorline") {
         cfgLine.state = s;
       }
-      if (o === cursorcolumn) {
+      if (o === "cursorcolumn") {
         cfgColumn.state = s;
       }
       setTimeout(async () => {
         const option = s ? o : `no${o}`;
         clog(`setOption: set ${option}`);
-        await vim.execute(`set ${option}`);
+        await denops.cmd(`set ${option}`);
       }, w);
-      return await Promise.resolve();
     },
-    async changeCursor(enable: unknown, option: unknown) {
+    changeCursor(enable: unknown, option: unknown) {
       const e = enable as boolean;
-      const o = option as string;
+      const o = option as LineOrColumn;
       if (!e) {
-        vim.execute(`set no${o}`);
+        denops.cmd(`set no${o}`);
       }
-      if (o === cursorline) {
+      if (o === "cursorline") {
         cfgLine.enable = e;
       }
-      if (o === cursorcolumn) {
+      if (o === "cursorcolumn") {
         cfgColumn.enable = e;
       }
-      return await Promise.resolve();
     },
-  });
+  };
 
-  await vim.autocmd("autocursor", (helper) => {
+  await autocmd.group(denops, "autocursor", (helper) => {
     helper.remove("*");
     [cfgLine, cfgColumn].forEach((cfg) => {
       cfg.events.forEach((e) => {
         helper.define(
           e.name,
           "*",
-          `call denops#notify('${vim.name}', 'setOption', [${
+          `call denops#notify('${denops.name}', 'setOption', [${
             e.set ? "v:true" : "v:false"
           }, ${e.wait}, '${cfg.option}'])`,
         );
@@ -211,12 +211,12 @@ main(async ({ vim }) => {
     });
   });
 
-  await vim.execute(`
-    command! EnableAutoCursorLine call denops#notify('${vim.name}', 'changeCursor', [v:true, "cursorline"])
-    command! EnableAutoCursorColumn call denops#notify('${vim.name}', 'changeCursor', [v:true, "cursorcolumn"])
-    command! DisableAutoCursorLine call denops#notify('${vim.name}', 'changeCursor', [v:false, "cursorline"])
-    command! DisableAutoCursorColumn call denops#notify('${vim.name}', 'changeCursor', [v:false, "cursorcolumn"])
+  await execute(`
+    command! EnableAutoCursorLine call denops#notify('${denops.name}', 'changeCursor', [v:true, "cursorline"])
+    command! EnableAutoCursorColumn call denops#notify('${denops.name}', 'changeCursor', [v:true, "cursorcolumn"])
+    command! DisableAutoCursorLine call denops#notify('${denops.name}', 'changeCursor', [v:false, "cursorline"])
+    command! DisableAutoCursorColumn call denops#notify('${denops.name}', 'changeCursor', [v:false, "cursorcolumn"])
   `);
 
   clog("dps-autocursor has loaded");
-});
+}
