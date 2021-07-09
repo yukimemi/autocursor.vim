@@ -152,6 +152,7 @@ export async function main(denops: Denops): Promise<void> {
   }
 
   denops.dispatcher = {
+    // deno-lint-ignore require-await
     async setOption(
       set: unknown,
       wait: unknown,
@@ -161,35 +162,45 @@ export async function main(denops: Denops): Promise<void> {
       const s = set as boolean;
       const w = wait as number;
       const o = option as LineOrColumn;
-      await lock.with(() => {
-        if (o === "cursorline") {
-          if (s === cfgLine.state || !cfgLine.enable) {
-            clog(
-              `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
-            );
-            return;
-          }
+      (async () => {
+        try {
+          await lock.with(() => {
+            if (o === "cursorline") {
+              if (s === cfgLine.state || !cfgLine.enable) {
+                clog(
+                  `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
+                );
+                return;
+              }
+            }
+            if (o === "cursorcolumn") {
+              if (s === cfgColumn.state || !cfgColumn.enable) {
+                clog(
+                  `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
+                );
+                return;
+              }
+            }
+            if (o === "cursorline") {
+              cfgLine.state = s;
+            }
+            if (o === "cursorcolumn") {
+              cfgColumn.state = s;
+            }
+            setTimeout(async () => {
+              try {
+                const option = s ? o : `no${o}`;
+                clog(`setOption: set ${option}`);
+                await denops.cmd(`set ${option}`);
+              } catch (e) {
+                console.log(e);
+              }
+            }, w);
+          });
+        } catch (e) {
+          console.log(e);
         }
-        if (o === "cursorcolumn") {
-          if (s === cfgColumn.state || !cfgColumn.enable) {
-            clog(
-              `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
-            );
-            return;
-          }
-        }
-        if (o === "cursorline") {
-          cfgLine.state = s;
-        }
-        if (o === "cursorcolumn") {
-          cfgColumn.state = s;
-        }
-        setTimeout(async () => {
-          const option = s ? o : `no${o}`;
-          clog(`setOption: set ${option}`);
-          await denops.cmd(`set ${option}`);
-        }, w);
-      });
+      })();
     },
 
     // deno-lint-ignore require-await
