@@ -142,26 +142,26 @@ export async function main(denops: Denops): Promise<void> {
       option: unknown,
     ): Promise<void> {
       try {
-        ensureNumber(wait);
-        ensureBoolean(set);
-        const opt = option as LineOrColumn;
-        if (opt === "cursorline") {
-          if (set === cfgLine.state || !cfgLine.enable) {
-            clog(
-              `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
-            );
-            return;
-          }
-        }
-        if (opt === "cursorcolumn") {
-          if (set === cfgColumn.state || !cfgColumn.enable) {
-            clog(
-              `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
-            );
-            return;
-          }
-        }
         await lock.with(() => {
+          ensureNumber(wait);
+          ensureBoolean(set);
+          const opt = option as LineOrColumn;
+          if (opt === "cursorline") {
+            if (set === cfgLine.state || !cfgLine.enable) {
+              clog(
+                `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
+              );
+              return;
+            }
+          }
+          if (opt === "cursorcolumn") {
+            if (set === cfgColumn.state || !cfgColumn.enable) {
+              clog(
+                `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
+              );
+              return;
+            }
+          }
           if (opt === "cursorline") {
             cfgLine.state = set;
           }
@@ -199,6 +199,19 @@ export async function main(denops: Denops): Promise<void> {
     },
   };
 
+  await helper.execute(
+    denops,
+    `
+    function! s:notify(method, params) abort
+      call denops#plugin#wait_async('${denops.name}', function('denops#notify', ['${denops.name}', a:method, a:params]))
+    endfunction
+    command! EnableAutoCursorLine call s:notify('changeCursor', [v:true, "cursorline"])
+    command! EnableAutoCursorColumn call s:notify('changeCursor', [v:true, "cursorcolumn"])
+    command! DisableAutoCursorLine call s:notify('changeCursor', [v:false, "cursorline"])
+    command! DisableAutoCursorColumn call s:notify('changeCursor', [v:false, "cursorcolumn"])
+  `,
+  );
+
   await autocmd.group(denops, "autocursor", (helper) => {
     helper.remove();
     [cfgLine, cfgColumn].forEach((cfg) => {
@@ -206,23 +219,13 @@ export async function main(denops: Denops): Promise<void> {
         helper.define(
           e.name,
           "*",
-          `call denops#notify('${denops.name}', 'setOption', [${
+          `call s:notify('setOption', [${
             e.set ? "v:true" : "v:false"
           }, ${e.wait}, '${cfg.option}'])`,
         );
       });
     });
   });
-
-  await helper.execute(
-    denops,
-    `
-    command! EnableAutoCursorLine call denops#notify('${denops.name}', 'changeCursor', [v:true, "cursorline"])
-    command! EnableAutoCursorColumn call denops#notify('${denops.name}', 'changeCursor', [v:true, "cursorcolumn"])
-    command! DisableAutoCursorLine call denops#notify('${denops.name}', 'changeCursor', [v:false, "cursorline"])
-    command! DisableAutoCursorColumn call denops#notify('${denops.name}', 'changeCursor', [v:false, "cursorcolumn"])
-  `,
-  );
 
   clog("dps-autocursor has loaded");
 }
