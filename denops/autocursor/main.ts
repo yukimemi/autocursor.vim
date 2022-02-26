@@ -1,9 +1,9 @@
 import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
-import * as autocmd from "https://deno.land/x/denops_std@v3.0.0/autocmd/mod.ts";
-import * as helper from "https://deno.land/x/denops_std@v3.0.0/helper/mod.ts";
-import * as op from "https://deno.land/x/denops_std@v3.0.0/option/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v3.0.0/variable/mod.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v3.0.0/mod.ts";
+import * as autocmd from "https://deno.land/x/denops_std@v3.1.3/autocmd/mod.ts";
+import * as helper from "https://deno.land/x/denops_std@v3.1.3/helper/mod.ts";
+import * as op from "https://deno.land/x/denops_std@v3.1.3/option/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v3.1.3/variable/mod.ts";
+import type { Denops } from "https://deno.land/x/denops_std@v3.1.3/mod.ts";
 import { Lock } from "https://deno.land/x/async@v1.1.5/mod.ts";
 import {
   ensureBoolean,
@@ -118,6 +118,8 @@ const lock = new Lock();
 export async function main(denops: Denops): Promise<void> {
   // debug.
   const debug = await vars.g.get(denops, "autocursor_debug", false);
+  // fixTimer.
+  const fixTimer = await vars.g.get(denops, "autocursor_fix_timer", 5000);
   // deno-lint-ignore no-explicit-any
   const clog = (...data: any[]): void => {
     if (debug) {
@@ -197,6 +199,17 @@ export async function main(denops: Denops): Promise<void> {
         cfgColumn.enable = enable;
       }
     },
+
+    async fixState(timer: unknown): Promise<void> {
+      ensureNumber(timer);
+      setInterval(async () => {
+        cfgLine.state = (await op.cursorline.get(denops)) ? true : false;
+        cfgColumn.state = (await op.cursorcolumn.get(denops)) ? true : false;
+        clog(
+          `Fix state. line: [${cfgLine.state}], column: [${cfgColumn.state}]`,
+        );
+      }, timer);
+    },
   };
 
   await helper.execute(
@@ -225,6 +238,11 @@ export async function main(denops: Denops): Promise<void> {
         );
       });
     });
+    helper.define(
+      `User`,
+      `DenopsPluginPost:${denops.name}`,
+      `call s:notify('fixState', [${fixTimer}])`,
+    );
   });
 
   clog("dps-autocursor has loaded");
