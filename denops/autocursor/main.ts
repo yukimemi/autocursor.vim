@@ -118,8 +118,8 @@ const lock = new Lock();
 export async function main(denops: Denops): Promise<void> {
   // debug.
   const debug = await vars.g.get(denops, "autocursor_debug", false);
-  // fixTimer.
-  const fixTimer = await vars.g.get(denops, "autocursor_fix_timer", 5000);
+  // fix state interval.
+  const fixInterval = await vars.g.get(denops, "autocursor_fix_interval", 5000);
   // deno-lint-ignore no-explicit-any
   const clog = (...data: any[]): void => {
     if (debug) {
@@ -200,15 +200,15 @@ export async function main(denops: Denops): Promise<void> {
       }
     },
 
-    async fixState(timer: unknown): Promise<void> {
-      ensureNumber(timer);
+    async fixState(interval: unknown): Promise<void> {
+      ensureNumber(interval);
       setInterval(async () => {
         cfgLine.state = (await op.cursorline.get(denops)) ? true : false;
         cfgColumn.state = (await op.cursorcolumn.get(denops)) ? true : false;
         clog(
           `Fix state. line: [${cfgLine.state}], column: [${cfgColumn.state}]`,
         );
-      }, timer);
+      }, interval);
     },
   };
 
@@ -241,7 +241,7 @@ export async function main(denops: Denops): Promise<void> {
     helper.define(
       `User`,
       `DenopsPluginPost:${denops.name}`,
-      `call s:notify('fixState', [${fixTimer}])`,
+      `call s:notify('fixState', [${fixInterval}])`,
     );
   });
 
