@@ -215,13 +215,13 @@ export async function main(denops: Denops): Promise<void> {
   await helper.execute(
     denops,
     `
-    function! s:notify(method, params) abort
+    function! s:${denops.name}_notify(method, params) abort
       call denops#plugin#wait_async('${denops.name}', function('denops#notify', ['${denops.name}', a:method, a:params]))
     endfunction
-    command! EnableAutoCursorLine call s:notify('changeCursor', [v:true, "cursorline"])
-    command! EnableAutoCursorColumn call s:notify('changeCursor', [v:true, "cursorcolumn"])
-    command! DisableAutoCursorLine call s:notify('changeCursor', [v:false, "cursorline"])
-    command! DisableAutoCursorColumn call s:notify('changeCursor', [v:false, "cursorcolumn"])
+    command! EnableAutoCursorLine call s:${denops.name}_notify('changeCursor', [v:true, "cursorline"])
+    command! EnableAutoCursorColumn call s:${denops.name}_notify('changeCursor', [v:true, "cursorcolumn"])
+    command! DisableAutoCursorLine call s:${denops.name}_notify('changeCursor', [v:false, "cursorline"])
+    command! DisableAutoCursorColumn call s:${denops.name}_notify('changeCursor', [v:false, "cursorcolumn"])
   `,
   );
 
@@ -232,7 +232,7 @@ export async function main(denops: Denops): Promise<void> {
         helper.define(
           e.name,
           "*",
-          `call s:notify('setOption', [${
+          `call s:${denops.name}_notify('setOption', [${
             e.set ? "v:true" : "v:false"
           }, ${e.wait}, '${cfg.option}'])`,
         );
@@ -241,7 +241,7 @@ export async function main(denops: Denops): Promise<void> {
     helper.define(
       `User`,
       `DenopsPluginPost:${denops.name}`,
-      `call s:notify('fixState', [${fixInterval}])`,
+      `call s:${denops.name}_notify('fixState', [${fixInterval}])`,
     );
   });
 
