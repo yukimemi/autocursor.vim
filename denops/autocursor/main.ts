@@ -1,14 +1,14 @@
-import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
-import * as autocmd from "https://deno.land/x/denops_std@v3.1.3/autocmd/mod.ts";
-import * as helper from "https://deno.land/x/denops_std@v3.1.3/helper/mod.ts";
-import * as op from "https://deno.land/x/denops_std@v3.1.3/option/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v3.1.3/variable/mod.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v3.1.3/mod.ts";
+import * as autocmd from "https://deno.land/x/denops_std@v3.3.1/autocmd/mod.ts";
+import * as helper from "https://deno.land/x/denops_std@v3.3.1/helper/mod.ts";
+import * as op from "https://deno.land/x/denops_std@v3.3.1/option/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v3.3.1/variable/mod.ts";
+import type { Denops } from "https://deno.land/x/denops_std@v3.3.1/mod.ts";
 import { Lock } from "https://deno.land/x/async@v1.1.5/mod.ts";
+import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
 import {
-  ensureBoolean,
-  ensureNumber,
-} from "https://deno.land/x/unknownutil@v1.1.4/mod.ts";
+  assertBoolean,
+  assertNumber,
+} from "https://deno.land/x/unknownutil@v2.0.0/mod.ts";
 
 const lineWait = 100;
 const columnWait = 100;
@@ -145,8 +145,8 @@ export async function main(denops: Denops): Promise<void> {
     ): Promise<void> {
       try {
         await lock.with(() => {
-          ensureNumber(wait);
-          ensureBoolean(set);
+          assertNumber(wait);
+          assertBoolean(set);
           const opt = option as LineOrColumn;
           if (opt === "cursorline") {
             if (set === cfgLine.state || !cfgLine.enable) {
@@ -186,7 +186,7 @@ export async function main(denops: Denops): Promise<void> {
     },
 
     async changeCursor(enable: unknown, option: unknown): Promise<void> {
-      ensureBoolean(enable);
+      assertBoolean(enable);
       const opt = option as LineOrColumn;
       if (!enable) {
         clog(`set no${opt}`);
@@ -201,7 +201,7 @@ export async function main(denops: Denops): Promise<void> {
     },
 
     async fixState(interval: unknown): Promise<void> {
-      ensureNumber(interval);
+      assertNumber(interval);
       setInterval(async () => {
         cfgLine.state = (await op.cursorline.get(denops)) ? true : false;
         cfgColumn.state = (await op.cursorcolumn.get(denops)) ? true : false;
