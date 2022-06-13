@@ -113,6 +113,8 @@ let cfgColumn: Cursor = {
   ],
 };
 
+let blacklistFileTypes = ["list"];
+
 const lock = new Lock();
 
 export async function main(denops: Denops): Promise<void> {
@@ -132,10 +134,15 @@ export async function main(denops: Denops): Promise<void> {
     (await vars.g.get(denops, "autocursor_cursorline")) as Cursor;
   const userCfgColumn =
     (await vars.g.get(denops, "autocursor_cursorcolumn")) as Cursor;
+  blacklistFileTypes = await vars.g.get(
+    denops,
+    "autocursor_blacklist_filetypes",
+    blacklistFileTypes,
+  );
 
   cfgLine = merge(cfgLine, userCfgLine);
   cfgColumn = merge(cfgColumn, userCfgColumn);
-  clog({ cfgLine, cfgColumn });
+  clog({ cfgLine, cfgColumn, blacklistFileTypes });
 
   denops.dispatcher = {
     async setOption(
@@ -164,13 +171,18 @@ export async function main(denops: Denops): Promise<void> {
               return;
             }
           }
-          if (opt === "cursorline") {
-            cfgLine.state = set;
-          }
-          if (opt === "cursorcolumn") {
-            cfgColumn.state = set;
-          }
           setTimeout(async () => {
+            const ft = (await op.filetype.get(denops));
+            if (blacklistFileTypes.some((x) => x === ft)) {
+              clog(`ft is [${ft}], so skip !`);
+              return;
+            }
+            if (opt === "cursorline") {
+              cfgLine.state = set;
+            }
+            if (opt === "cursorcolumn") {
+              cfgColumn.state = set;
+            }
             if (set) {
               clog(`setOption: set ${option}`);
               await op[opt].set(denops, true);
@@ -200,6 +212,7 @@ export async function main(denops: Denops): Promise<void> {
       }
     },
 
+    // deno-lint-ignore require-await
     async fixState(interval: unknown): Promise<void> {
       assertNumber(interval);
       setInterval(async () => {
