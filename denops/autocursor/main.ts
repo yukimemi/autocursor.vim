@@ -1,16 +1,15 @@
-import * as autocmd from "https://deno.land/x/denops_std@v3.9.1/autocmd/mod.ts";
-import * as helper from "https://deno.land/x/denops_std@v3.9.1/helper/mod.ts";
-import * as op from "https://deno.land/x/denops_std@v3.9.1/option/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v3.9.1/variable/mod.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v3.9.1/mod.ts";
-import { Lock } from "https://deno.land/x/async@v1.1.5/mod.ts";
+import * as autocmd from "https://deno.land/x/denops_std@v3.9.3/autocmd/mod.ts";
+import * as helper from "https://deno.land/x/denops_std@v3.9.3/helper/mod.ts";
+import * as op from "https://deno.land/x/denops_std@v3.9.3/option/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v3.9.3/variable/mod.ts";
+import type { Denops } from "https://deno.land/x/denops_std@v3.9.3/mod.ts";
+import { Lock } from "https://deno.land/x/async@v1.2.0/mod.ts";
 import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
 import {
   assertBoolean,
   assertNumber,
-} from "https://deno.land/x/unknownutil@v2.0.0/mod.ts";
+} from "https://deno.land/x/unknownutil@v2.1.0/mod.ts";
 
-const delay = 1000;
 const lineWait = 100;
 const columnWait = 100;
 
@@ -246,9 +245,9 @@ export async function main(denops: Denops): Promise<void> {
         helper.define(
           e.name,
           "*",
-          `call autocursor#util#throttle('call denops#notify("${denops.name}", "setOption", [${
+          `call s:${denops.name}_notify('setOption', [${
             e.set ? "v:true" : "v:false"
-          }, ${e.wait}, "${cfg.option}"])', ${delay})`,
+          }, ${e.wait}, '${cfg.option}'])`,
         );
       });
     });
