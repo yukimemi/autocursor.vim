@@ -151,49 +151,47 @@ export async function main(denops: Denops): Promise<void> {
       option: unknown,
     ): Promise<void> {
       try {
-        await lock.with(() => {
-          _.throttle(() => {
-            assertNumber(wait);
-            assertBoolean(set);
-            const opt = option as LineOrColumn;
+        await lock.with(_.throttle(() => {
+          assertNumber(wait);
+          assertBoolean(set);
+          const opt = option as LineOrColumn;
+          if (opt === "cursorline") {
+            if (set === cfgLine.state || !cfgLine.enable) {
+              clog(
+                `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
+              );
+              return;
+            }
+          }
+          if (opt === "cursorcolumn") {
+            if (set === cfgColumn.state || !cfgColumn.enable) {
+              clog(
+                `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
+              );
+              return;
+            }
+          }
+          setTimeout(async () => {
+            const ft = (await op.filetype.get(denops));
+            if (blacklistFileTypes.some((x) => x === ft)) {
+              clog(`ft is [${ft}], so skip !`);
+              return;
+            }
             if (opt === "cursorline") {
-              if (set === cfgLine.state || !cfgLine.enable) {
-                clog(
-                  `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
-                );
-                return;
-              }
+              cfgLine.state = set;
             }
             if (opt === "cursorcolumn") {
-              if (set === cfgColumn.state || !cfgColumn.enable) {
-                clog(
-                  `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
-                );
-                return;
-              }
+              cfgColumn.state = set;
             }
-            setTimeout(async () => {
-              const ft = (await op.filetype.get(denops));
-              if (blacklistFileTypes.some((x) => x === ft)) {
-                clog(`ft is [${ft}], so skip !`);
-                return;
-              }
-              if (opt === "cursorline") {
-                cfgLine.state = set;
-              }
-              if (opt === "cursorcolumn") {
-                cfgColumn.state = set;
-              }
-              if (set) {
-                clog(`setOption: set ${option}`);
-                await op[opt].set(denops, true);
-              } else {
-                clog(`setOption: set no${option}`);
-                await op[opt].set(denops, false);
-              }
-            }, wait);
-          }, throttleTime)();
-        });
+            if (set) {
+              clog(`setOption: set ${option}`);
+              await op[opt].set(denops, true);
+            } else {
+              clog(`setOption: set no${option}`);
+              await op[opt].set(denops, false);
+            }
+          }, wait);
+        }, throttleTime));
       } catch (e) {
         clog(e);
       }
