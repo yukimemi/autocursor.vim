@@ -2,15 +2,14 @@ import * as autocmd from "https://deno.land/x/denops_std@v3.9.3/autocmd/mod.ts";
 import * as helper from "https://deno.land/x/denops_std@v3.9.3/helper/mod.ts";
 import * as op from "https://deno.land/x/denops_std@v3.9.3/option/mod.ts";
 import * as vars from "https://deno.land/x/denops_std@v3.9.3/variable/mod.ts";
-import * as _ from "https://cdn.skypack.dev/lodash@4.17.21";
 import type { Denops } from "https://deno.land/x/denops_std@v3.9.3/mod.ts";
-import { Lock } from "https://deno.land/x/async@v1.2.0/mod.ts";
 import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
 import {
   assertBoolean,
   assertNumber,
 } from "https://deno.land/x/unknownutil@v2.1.0/mod.ts";
 
+const version = "20221207_000905";
 const lineWait = 100;
 const columnWait = 100;
 
@@ -106,7 +105,23 @@ let cfgColumn: Cursor = {
 
 let blacklistFileTypes = ["list"];
 
-const lock = new Lock();
+const throttles: Record<string, [number, number]> = {};
+
+function throttle(id: string, fn: () => void, delay: number) {
+  const last = throttles[id] || [0, 0];
+  let lastTimerId = last[0];
+  const lastTime = last[1];
+  let updateTime = (new Date()).getTime();
+  const elapsed = (updateTime - lastTime);
+  clearTimeout(lastTimerId);
+  if (elapsed > delay) {
+    fn();
+  } else {
+    lastTimerId = setTimeout(fn, delay);
+    updateTime = lastTime;
+  }
+  throttles[id] = [lastTimerId, updateTime];
+}
 
 export async function main(denops: Denops): Promise<void> {
   // debug.
@@ -114,7 +129,7 @@ export async function main(denops: Denops): Promise<void> {
   // fix state interval.
   const fixInterval = await vars.g.get(denops, "autocursor_fix_interval", 5000);
   // throttle.
-  const throttleTime = await vars.g.get(denops, "autocursor_throttle", 1000);
+  const throttleTime = await vars.g.get(denops, "autocursor_throttle", 300);
   // deno-lint-ignore no-explicit-any
   const clog = (...data: any[]): void => {
     if (debug) {
@@ -145,16 +160,17 @@ export async function main(denops: Denops): Promise<void> {
   });
 
   denops.dispatcher = {
+    // deno-lint-ignore require-await
     async setOption(
       set: unknown,
       wait: unknown,
       option: unknown,
     ): Promise<void> {
       try {
-        await lock.with(_.throttle(() => {
+        const opt = option as LineOrColumn;
+        throttle(opt, () => {
           assertNumber(wait);
           assertBoolean(set);
-          const opt = option as LineOrColumn;
           if (opt === "cursorline") {
             if (set === cfgLine.state || !cfgLine.enable) {
               clog(
@@ -191,7 +207,7 @@ export async function main(denops: Denops): Promise<void> {
               await op[opt].set(denops, false);
             }
           }, wait);
-        }, throttleTime));
+        }, throttleTime);
       } catch (e) {
         clog(e);
       }
@@ -258,5 +274,5 @@ export async function main(denops: Denops): Promise<void> {
     );
   });
 
-  clog("dps-autocursor has loaded");
+  clog(`dps-autocursor has loaded. ver: ${version}`);
 }
