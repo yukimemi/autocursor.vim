@@ -2,6 +2,7 @@ import * as autocmd from "https://deno.land/x/denops_std@v3.9.3/autocmd/mod.ts";
 import * as helper from "https://deno.land/x/denops_std@v3.9.3/helper/mod.ts";
 import * as op from "https://deno.land/x/denops_std@v3.9.3/option/mod.ts";
 import * as vars from "https://deno.land/x/denops_std@v3.9.3/variable/mod.ts";
+import * as _ from "https://cdn.skypack.dev/lodash@4.17.21";
 import type { Denops } from "https://deno.land/x/denops_std@v3.9.3/mod.ts";
 import { Lock } from "https://deno.land/x/async@v1.2.0/mod.ts";
 import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
@@ -54,11 +55,6 @@ let cfgLine: Cursor = {
       wait: 0,
     },
     {
-      name: "CmdwinLeave",
-      set: true,
-      wait: 0,
-    },
-    {
       name: "CursorMoved",
       set: false,
       wait: 0,
@@ -96,11 +92,6 @@ let cfgColumn: Cursor = {
       wait: 0,
     },
     {
-      name: "CmdwinLeave",
-      set: true,
-      wait: 0,
-    },
-    {
       name: "CursorMoved",
       set: false,
       wait: 0,
@@ -122,6 +113,8 @@ export async function main(denops: Denops): Promise<void> {
   const debug = await vars.g.get(denops, "autocursor_debug", false);
   // fix state interval.
   const fixInterval = await vars.g.get(denops, "autocursor_fix_interval", 5000);
+  // throttle.
+  const throttleTime = await vars.g.get(denops, "autocursor_throttle", 1000);
   // deno-lint-ignore no-explicit-any
   const clog = (...data: any[]): void => {
     if (debug) {
@@ -142,7 +135,14 @@ export async function main(denops: Denops): Promise<void> {
 
   cfgLine = merge(cfgLine, userCfgLine);
   cfgColumn = merge(cfgColumn, userCfgColumn);
-  clog({ cfgLine, cfgColumn, blacklistFileTypes });
+  clog({
+    debug,
+    fixInterval,
+    throttleTime,
+    cfgLine,
+    cfgColumn,
+    blacklistFileTypes,
+  });
 
   denops.dispatcher = {
     async setOption(
@@ -152,45 +152,47 @@ export async function main(denops: Denops): Promise<void> {
     ): Promise<void> {
       try {
         await lock.with(() => {
-          assertNumber(wait);
-          assertBoolean(set);
-          const opt = option as LineOrColumn;
-          if (opt === "cursorline") {
-            if (set === cfgLine.state || !cfgLine.enable) {
-              clog(
-                `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
-              );
-              return;
-            }
-          }
-          if (opt === "cursorcolumn") {
-            if (set === cfgColumn.state || !cfgColumn.enable) {
-              clog(
-                `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
-              );
-              return;
-            }
-          }
-          setTimeout(async () => {
-            const ft = (await op.filetype.get(denops));
-            if (blacklistFileTypes.some((x) => x === ft)) {
-              clog(`ft is [${ft}], so skip !`);
-              return;
-            }
+          _.throttle(() => {
+            assertNumber(wait);
+            assertBoolean(set);
+            const opt = option as LineOrColumn;
             if (opt === "cursorline") {
-              cfgLine.state = set;
+              if (set === cfgLine.state || !cfgLine.enable) {
+                clog(
+                  `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
+                );
+                return;
+              }
             }
             if (opt === "cursorcolumn") {
-              cfgColumn.state = set;
+              if (set === cfgColumn.state || !cfgColumn.enable) {
+                clog(
+                  `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
+                );
+                return;
+              }
             }
-            if (set) {
-              clog(`setOption: set ${option}`);
-              await op[opt].set(denops, true);
-            } else {
-              clog(`setOption: set no${option}`);
-              await op[opt].set(denops, false);
-            }
-          }, wait);
+            setTimeout(async () => {
+              const ft = (await op.filetype.get(denops));
+              if (blacklistFileTypes.some((x) => x === ft)) {
+                clog(`ft is [${ft}], so skip !`);
+                return;
+              }
+              if (opt === "cursorline") {
+                cfgLine.state = set;
+              }
+              if (opt === "cursorcolumn") {
+                cfgColumn.state = set;
+              }
+              if (set) {
+                clog(`setOption: set ${option}`);
+                await op[opt].set(denops, true);
+              } else {
+                clog(`setOption: set no${option}`);
+                await op[opt].set(denops, false);
+              }
+            }, wait);
+          }, throttleTime)();
         });
       } catch (e) {
         clog(e);
