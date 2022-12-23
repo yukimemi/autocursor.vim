@@ -1,8 +1,8 @@
-import * as autocmd from "https://deno.land/x/denops_std@v3.9.3/autocmd/mod.ts";
-import * as helper from "https://deno.land/x/denops_std@v3.9.3/helper/mod.ts";
-import * as op from "https://deno.land/x/denops_std@v3.9.3/option/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v3.9.3/variable/mod.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v3.9.3/mod.ts";
+import * as autocmd from "https://deno.land/x/denops_std@v3.12.0/autocmd/mod.ts";
+import * as helper from "https://deno.land/x/denops_std@v3.12.0/helper/mod.ts";
+import * as op from "https://deno.land/x/denops_std@v3.12.0/option/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v3.12.0/variable/mod.ts";
+import type { Denops } from "https://deno.land/x/denops_std@v3.12.0/mod.ts";
 import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
 import {
   assertBoolean,
