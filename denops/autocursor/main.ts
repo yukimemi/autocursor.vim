@@ -9,7 +9,7 @@ import {
   assertNumber,
 } from "https://deno.land/x/unknownutil@v2.1.0/mod.ts";
 
-const version = "20221207_000905";
+const version = "20230120_210137";
 const lineWait = 100;
 const columnWait = 100;
 
@@ -103,7 +103,16 @@ let cfgColumn: Cursor = {
   ],
 };
 
-let blacklistFileTypes = ["list"];
+let blacklistFileTypes = [
+  "ctrlp",
+  "ddu-ff",
+  "ddu-ff-filter",
+  "ddu-filer",
+  "dpswalk",
+  "list",
+  "qf",
+  "quickfix",
+];
 
 const throttles: Record<string, [number, number]> = {};
 
@@ -112,7 +121,7 @@ function throttle(id: string, fn: () => void, delay: number) {
   let lastTimerId = last[0];
   const lastTime = last[1];
   let updateTime = (new Date()).getTime();
-  const elapsed = (updateTime - lastTime);
+  const elapsed = updateTime - lastTime;
   clearTimeout(lastTimerId);
   if (elapsed > delay) {
     fn();
@@ -188,7 +197,7 @@ export async function main(denops: Denops): Promise<void> {
             }
           }
           setTimeout(async () => {
-            const ft = (await op.filetype.get(denops));
+            const ft = await op.filetype.get(denops);
             if (blacklistFileTypes.some((x) => x === ft)) {
               clog(`ft is [${ft}], so skip !`);
               return;
