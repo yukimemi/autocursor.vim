@@ -1,22 +1,22 @@
-import * as autocmd from "https://deno.land/x/denops_std@v3.12.0/autocmd/mod.ts";
-import * as helper from "https://deno.land/x/denops_std@v3.12.0/helper/mod.ts";
-import * as op from "https://deno.land/x/denops_std@v3.12.0/option/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v3.12.0/variable/mod.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v3.12.0/mod.ts";
-import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
+import * as autocmd from "https://deno.land/x/denops_std@v4.1.0/autocmd/mod.ts";
+import * as helper from "https://deno.land/x/denops_std@v4.1.0/helper/mod.ts";
+import * as op from "https://deno.land/x/denops_std@v4.1.0/option/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v4.1.0/variable/mod.ts";
+import type {Denops} from "https://deno.land/x/denops_std@v4.1.0/mod.ts";
+import {merge} from "https://cdn.skypack.dev/lodash@4.17.21";
 import {
   assertBoolean,
   assertNumber,
 } from "https://deno.land/x/unknownutil@v2.1.0/mod.ts";
 
-const version = "20230120_210137";
+const version = "20230321_171124";
 const lineWait = 100;
 const columnWait = 100;
 
 type LineOrColumn = "cursorline" | "cursorcolumn";
 
 type Event = {
-  name: autocmd.AutocmdEvent;
+  name: autocmd.AutocmdEvent | autocmd.AutocmdEvent[];
   set: boolean;
   wait: number;
 };
@@ -34,32 +34,17 @@ let cfgLine: Cursor = {
   state: false,
   events: [
     {
-      name: "CursorHold",
+      name: ["CursorHold", "CursorHoldI"],
       set: true,
       wait: lineWait,
     },
     {
-      name: "CursorHoldI",
-      set: true,
-      wait: lineWait,
-    },
-    {
-      name: "WinEnter",
+      name: ["WinEnter", "BufEnter"],
       set: true,
       wait: 0,
     },
     {
-      name: "BufEnter",
-      set: true,
-      wait: 0,
-    },
-    {
-      name: "CursorMoved",
-      set: false,
-      wait: 0,
-    },
-    {
-      name: "CursorMovedI",
+      name: ["CursorMoved", "CursorMovedI"],
       set: false,
       wait: 0,
     },
@@ -71,32 +56,17 @@ let cfgColumn: Cursor = {
   state: false,
   events: [
     {
-      name: "CursorHold",
+      name: ["CursorHold", "CursorHoldI"],
       set: true,
       wait: columnWait,
     },
     {
-      name: "CursorHoldI",
-      set: true,
-      wait: columnWait,
-    },
-    {
-      name: "WinEnter",
+      name: ["WinEnter", "BufEnter"],
       set: true,
       wait: 0,
     },
     {
-      name: "BufEnter",
-      set: true,
-      wait: 0,
-    },
-    {
-      name: "CursorMoved",
-      set: false,
-      wait: 0,
-    },
-    {
-      name: "CursorMovedI",
+      name: ["CursorMoved", "CursorMovedI"],
       set: false,
       wait: 0,
     },
@@ -270,8 +240,7 @@ export async function main(denops: Denops): Promise<void> {
         helper.define(
           e.name,
           "*",
-          `call s:${denops.name}_notify('setOption', [${
-            e.set ? "v:true" : "v:false"
+          `call s:${denops.name}_notify('setOption', [${e.set ? "v:true" : "v:false"
           }, ${e.wait}, '${cfg.option}'])`,
         );
       });
