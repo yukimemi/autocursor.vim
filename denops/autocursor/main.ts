@@ -1,15 +1,15 @@
-import * as autocmd from "https://deno.land/x/denops_std@v4.1.0/autocmd/mod.ts";
-import * as helper from "https://deno.land/x/denops_std@v4.1.0/helper/mod.ts";
-import * as op from "https://deno.land/x/denops_std@v4.1.0/option/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v4.1.0/variable/mod.ts";
-import type {Denops} from "https://deno.land/x/denops_std@v4.1.0/mod.ts";
-import {merge} from "https://cdn.skypack.dev/lodash@4.17.21";
+import * as autocmd from "https://deno.land/x/denops_std@v4.1.5/autocmd/mod.ts";
+import * as helper from "https://deno.land/x/denops_std@v4.1.5/helper/mod.ts";
+import * as op from "https://deno.land/x/denops_std@v4.1.5/option/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v4.1.5/variable/mod.ts";
+import type { Denops } from "https://deno.land/x/denops_std@v4.1.5/mod.ts";
+import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
 import {
   assertBoolean,
   assertNumber,
 } from "https://deno.land/x/unknownutil@v2.1.0/mod.ts";
 
-const version = "20230321_171124";
+const version = "20230421_193603";
 const lineWait = 100;
 const columnWait = 100;
 
@@ -84,19 +84,35 @@ let blacklistFileTypes = [
   "quickfix",
 ];
 
+function uniqueEvent(events: Event[]) {
+  const unique = new Set();
+  return events
+    .map((event) =>
+      Array.isArray(event.name)
+        ? event.name.map((name) => ({ name, set: event.set, wait: event.wait }))
+        : [event]
+    )
+    .flat()
+    .filter((event) => {
+      const key = `${event.name}-${event.set}-${event.wait}`;
+      return !unique.has(key) && unique.add(key);
+    });
+}
+
 const throttles: Record<string, [number, number]> = {};
 
-function throttle(id: string, fn: () => void, delay: number) {
+function throttle(id: string, fn: () => void, delay: number, wait: number) {
   const last = throttles[id] || [0, 0];
   let lastTimerId = last[0];
   const lastTime = last[1];
   let updateTime = (new Date()).getTime();
   const elapsed = updateTime - lastTime;
+  const threshold = delay + wait;
   clearTimeout(lastTimerId);
-  if (elapsed > delay) {
+  if (elapsed > threshold) {
     fn();
   } else {
-    lastTimerId = setTimeout(fn, delay);
+    lastTimerId = setTimeout(fn, threshold);
     updateTime = lastTime;
   }
   throttles[id] = [lastTimerId, updateTime];
@@ -147,26 +163,27 @@ export async function main(denops: Denops): Promise<void> {
     ): Promise<void> {
       try {
         const opt = option as LineOrColumn;
-        throttle(opt, () => {
-          assertNumber(wait);
-          assertBoolean(set);
-          if (opt === "cursorline") {
-            if (set === cfgLine.state || !cfgLine.enable) {
-              clog(
-                `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
-              );
-              return;
+        assertNumber(wait);
+        throttle(
+          opt,
+          async () => {
+            assertBoolean(set);
+            if (opt === "cursorline") {
+              if (set === cfgLine.state || !cfgLine.enable) {
+                clog(
+                  `setOption: cfgLine.state: ${cfgLine.state}, cfgLine.enable: ${cfgLine.enable} so return.`,
+                );
+                return;
+              }
             }
-          }
-          if (opt === "cursorcolumn") {
-            if (set === cfgColumn.state || !cfgColumn.enable) {
-              clog(
-                `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
-              );
-              return;
+            if (opt === "cursorcolumn") {
+              if (set === cfgColumn.state || !cfgColumn.enable) {
+                clog(
+                  `setOption: cfgColumn.state: ${cfgColumn.state}, cfgColumn.enable: ${cfgColumn.enable} so return.`,
+                );
+                return;
+              }
             }
-          }
-          setTimeout(async () => {
             const ft = await op.filetype.get(denops);
             if (blacklistFileTypes.some((x) => x === ft)) {
               clog(`ft is [${ft}], so skip !`);
@@ -185,8 +202,10 @@ export async function main(denops: Denops): Promise<void> {
               clog(`setOption: set no${option}`);
               await op[opt].set(denops, false);
             }
-          }, wait);
-        }, throttleTime);
+          },
+          throttleTime,
+          wait,
+        );
       } catch (e) {
         clog(e);
       }
@@ -236,11 +255,14 @@ export async function main(denops: Denops): Promise<void> {
   await autocmd.group(denops, "autocursor", (helper) => {
     helper.remove();
     [cfgLine, cfgColumn].forEach((cfg) => {
-      cfg.events.forEach((e) => {
+      const events = uniqueEvent(cfg.events);
+      clog({ events });
+      events.forEach((e) => {
         helper.define(
           e.name,
           "*",
-          `call s:${denops.name}_notify('setOption', [${e.set ? "v:true" : "v:false"
+          `call s:${denops.name}_notify('setOption', [${
+            e.set ? "v:true" : "v:false"
           }, ${e.wait}, '${cfg.option}'])`,
         );
       });
