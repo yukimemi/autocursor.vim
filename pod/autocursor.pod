@@ -1,6 +1,6 @@
 ---
-name: autocursor
-description: dps-autocursor is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events. This plugin offers a convenient way to quickly switch between the two settings without having to manually invoke `set cursorline` and `set cursorcolumn`.
+name: dps-autocursor
+description: Denops auto cursorline / cursorcolumn
 ---
 
 =pod
@@ -17,7 +17,8 @@ Denops auto cursorline / cursorcolumn.
 
 =head1 Features X<autocursor-features>
 
-dps-autocursor is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events. This plugin offers a convenient way to quickly switch between the two settings without having to manually invoke `set cursorline` and `set cursorcolumn`.
+dps-autocursor is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events.
+This plugin offers a convenient way to quickly switch between the two settings without having to manually invoke `set cursorline` and `set cursorcolumn`.
 
 =head1 Installation X<autocursor-installation>
 
@@ -36,7 +37,6 @@ If you use L<yukimemi/dvpm|https://github.com/yukimemi/dvpm>.
   dvpm.add({ url: "yukimemi/dps-autocursor" });
 
 =head1 Requirements X<autocursor-requirements>
-
 
 =item [Deno - A modern runtime for JavaScript and TypeScript](https://deno.land/)
 
@@ -85,8 +85,7 @@ default is 300 (millisec)
 
 C<g:autocursor_cursorline>                            X<g:autocursor_cursorline>
 Configuration information about `cursorline`.
-
-=begin vim
+default setting is below.
 
   let g:autocursor_cursorline = {
     \ "enable": v:true,
@@ -109,7 +108,7 @@ Configuration information about `cursorline`.
     \  ]
     \ }
 
-=end vim
+=over
 
 =item When `CursorHold` and `CursorHoldI` occur, do `set cursorline` after 100ms.
 
@@ -117,12 +116,11 @@ Configuration information about `cursorline`.
 
 =item When `CursorMoved` and `BufEnter` occur, do `set nocursorline` immediatly.
 
-default setting is above.
+=back
 
 C<g:autocursor_cursorcolumn>                            X<g:autocursor_cursorcolumn>
 Configuration information about `cursorcolumn`.
-
-=begin vim
+default setting is below.
 
   let g:autocursor_cursorcolumn = {
     \ "enable": v:true,
@@ -145,7 +143,7 @@ Configuration information about `cursorcolumn`.
     \  ]
     \ }
 
-=end vim
+=over
 
 =item When `CursorHold` and `CursorHoldI` occur, do `set cursorcolumn` after 100ms.
 
@@ -153,13 +151,11 @@ Configuration information about `cursorcolumn`.
 
 =item When `CursorMoved` and `BufEnter` occur, do `set nocursorcolumn` immediatly.
 
-default setting is above.
+=back
 
 =head1 Example X<autocursor-example>
 
 If you use L<folke/lazy.nvim|https://github.com/folke/lazy.nvim>.
-
-=begin lua
 
   return {
     "yukimemi/dps-autocursor",
@@ -232,8 +228,6 @@ If you use L<folke/lazy.nvim|https://github.com/folke/lazy.nvim>.
       }
     end,
   }
-
-=end lua
 
 =head1 License X<autocursor-license>
 

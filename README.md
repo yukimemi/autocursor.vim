@@ -8,7 +8,8 @@ Denops auto cursorline / cursorcolumn.
 
 # Features 
 
-dps-autocursor is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events. This plugin offers a convenient way to quickly switch between the two settings without having to manually invoke `set cursorline` and `set cursorcolumn`.
+dps-autocursor is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events.
+This plugin offers a convenient way to quickly switch between the two settings without having to manually invoke `set cursorline` and `set cursorcolumn`.
 
 # Installation 
 
@@ -77,23 +78,143 @@ default is 300 (millisec)
 
 `g:autocursor_cursorline`                            
 Configuration information about `cursorline`.
+default setting is below.
 
-- When `CursorHold` and `CursorHoldI` occur, do `set cursorline` after 100ms.
-- When `WinEnter` and `BufEnter` occur, do `set cursorline` immediatly.
-- When `CursorMoved` and `BufEnter` occur, do `set nocursorline` immediatly.
-default setting is above.
+```
+  let g:autocursor_cursorline = {
+    \ "enable": v:true,
+    \ "events": [
+    \   {
+    \     "name": ["CursorHold", "CursorHoldI"],
+    \     "set": v:true,
+    \     "wait": 100,
+    \   },
+    \   {
+    \     "name": ["WinEnter", "BufEnter"],
+    \     "set": v:true,
+    \     "wait": 0,
+    \   },
+    \   {
+    \     "name": ["CursorMoved", "CursorMovedI"],
+    \     "set": v:false,
+    \     "wait": 0,
+    \   },
+    \  ]
+    \ }
+```
+
+    - When `CursorHold` and `CursorHoldI` occur, do `set cursorline` after 100ms.
+    - When `WinEnter` and `BufEnter` occur, do `set cursorline` immediatly.
+    - When `CursorMoved` and `BufEnter` occur, do `set nocursorline` immediatly.
 
 `g:autocursor_cursorcolumn`                            
 Configuration information about `cursorcolumn`.
+default setting is below.
 
-- When `CursorHold` and `CursorHoldI` occur, do `set cursorcolumn` after 100ms.
-- When `WinEnter` and `BufEnter` occur, do `set cursorcolumn` immediatly.
-- When `CursorMoved` and `BufEnter` occur, do `set nocursorcolumn` immediatly.
-default setting is above.
+```
+  let g:autocursor_cursorcolumn = {
+    \ "enable": v:true,
+    \ "events": [
+    \   {
+    \     "name": ["CursorHold", "CursorHoldI"],
+    \     "set": v:true,
+    \     "wait": 100,
+    \   },
+    \   {
+    \     "name": ["WinEnter", "BufEnter"],
+    \     "set": v:true,
+    \     "wait": 0,
+    \   },
+    \   {
+    \     "name": ["CursorMoved", "CursorMovedI"],
+    \     "set": v:false,
+    \     "wait": 0,
+    \   },
+    \  ]
+    \ }
+```
+
+    - When `CursorHold` and `CursorHoldI` occur, do `set cursorcolumn` after 100ms.
+    - When `WinEnter` and `BufEnter` occur, do `set cursorcolumn` immediatly.
+    - When `CursorMoved` and `BufEnter` occur, do `set nocursorcolumn` immediatly.
 
 # Example 
 
 If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
+
+```
+  return {
+    "yukimemi/dps-autocursor",
+    lazy = false,
+
+    dependencies = {
+      "vim-denops/denops.vim",
+    },
+
+    init = function()
+      vim.g.autocursor_ignore_filetypes = {
+        "ctrlp",
+        "ddu-ff",
+        "ddu-ff-filter",
+        "quickfix"
+      }
+      vim.g.autocursor_cursorline = {
+        enable = true,
+        events = {
+          {
+            name = {
+              "FocusGained",
+              "FocusLost",
+              "WinEnter",
+              "VimResized",
+              "BufEnter",
+              "CmdwinLeave",
+              "CursorHold",
+              "CursorHoldI",
+              "InsertLeave",
+              "ModeChanged",
+              "TextChanged",
+            },
+            set = true,
+            wait = 0,
+          },
+          {
+            name = { "CursorMoved", "CursorMovedI", "InsertEnter" },
+            set = false,
+            wait = 1000,
+          },
+        },
+      }
+      vim.g.autocursor_cursorcolumn = {
+        enable = true,
+        events = {
+          {
+            name = {
+              "FocusGained",
+              "FocusLost",
+              "WinEnter",
+              "VimResized",
+              "BufEnter",
+              "CmdwinLeave",
+              "CursorHold",
+              "CursorHoldI",
+              "InsertLeave",
+              "ModeChanged",
+              "TextChanged",
+            },
+            set = true,
+            wait = 100,
+          },
+          {
+            name = { "CursorMoved", "CursorMovedI", "InsertEnter" },
+            set = false,
+            wait = 1000,
+          },
+        },
+      }
+    end,
+  }
+```
 
 # License 
 
