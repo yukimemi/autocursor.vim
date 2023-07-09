@@ -4,12 +4,9 @@ import * as op from "https://deno.land/x/denops_std@v5.0.0/option/mod.ts";
 import * as vars from "https://deno.land/x/denops_std@v5.0.0/variable/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v5.0.0/mod.ts";
 import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
-import {
-  assertBoolean,
-  assertNumber,
-} from "https://deno.land/x/unknownutil@v2.1.1/mod.ts";
+import { assertBoolean, assertNumber } from "https://deno.land/x/unknownutil@v2.1.1/mod.ts";
 
-const version = "20230421_193603";
+const version = "20230709_230850";
 const lineWait = 100;
 const columnWait = 100;
 
@@ -73,7 +70,7 @@ let cfgColumn: Cursor = {
   ],
 };
 
-let blacklistFileTypes = [
+let ignoreFileTypes = [
   "ctrlp",
   "ddu-ff",
   "ddu-ff-filter",
@@ -133,14 +130,12 @@ export async function main(denops: Denops): Promise<void> {
   };
 
   // Merge user option.
-  const userCfgLine =
-    (await vars.g.get(denops, "autocursor_cursorline")) as Cursor;
-  const userCfgColumn =
-    (await vars.g.get(denops, "autocursor_cursorcolumn")) as Cursor;
-  blacklistFileTypes = await vars.g.get(
+  const userCfgLine = (await vars.g.get(denops, "autocursor_cursorline")) as Cursor;
+  const userCfgColumn = (await vars.g.get(denops, "autocursor_cursorcolumn")) as Cursor;
+  ignoreFileTypes = await vars.g.get(
     denops,
-    "autocursor_blacklist_filetypes",
-    blacklistFileTypes,
+    "autocursor_ignore_filetypes",
+    ignoreFileTypes,
   );
 
   cfgLine = merge(cfgLine, userCfgLine);
@@ -151,7 +146,7 @@ export async function main(denops: Denops): Promise<void> {
     throttleTime,
     cfgLine,
     cfgColumn,
-    blacklistFileTypes,
+    ignoreFileTypes,
   });
 
   denops.dispatcher = {
@@ -185,7 +180,7 @@ export async function main(denops: Denops): Promise<void> {
               }
             }
             const ft = await op.filetype.get(denops);
-            if (blacklistFileTypes.some((x) => x === ft)) {
+            if (ignoreFileTypes.some((x) => x === ft)) {
               clog(`ft is [${ft}], so skip !`);
               return;
             }
