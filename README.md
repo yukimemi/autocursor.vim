@@ -32,9 +32,8 @@ If you use [yukimemi/dvpm](https://github.com/yukimemi/dvpm).
 
 # Requirements 
 
-    - [Deno - A modern runtime for JavaScript and TypeScript](https://deno.land/)
-    - [vim-denops/denops.vim: 🐜 An ecosystem of Vim/Neovim which allows developers to write cross-platform plugins in Deno](https://github.com/vim-denops/denops.vim)
-
+- [Deno - A modern runtime for JavaScript and TypeScript](https://deno.land/)
+- [vim-denops/denops.vim: 🐜 An ecosystem of Vim/Neovim which allows developers to write cross-platform plugins in Deno](https://github.com/vim-denops/denops.vim)
 # Usage 
 
 No special settings are required.
@@ -49,10 +48,10 @@ Disable auto change cursorline.
 Enable auto change cursorline.
 
 `:DisableAutoCursorColumn`                          
-Disable auto change cursorline.
+Disable auto change cursorcolumn.
 
 `:EnableAutoCursorColumn`                            
-Enable auto change cursorline.
+Enable auto change cursorcolumn.
 
 # Config 
 
@@ -79,19 +78,17 @@ default is 300 (millisec)
 `g:autocursor_cursorline`                            
 Configuration information about `cursorline`.
 
-    - When `CursorHold` and `CursorHoldI` occur, do `set cursorline` after 100ms.
-    - When `WinEnter` and `BufEnter` occur, do `set cursorline` immediatly.
-    - When `CursorMoved` and `BufEnter` occur, do `set nocursorline` immediatly.
-
+- When `CursorHold` and `CursorHoldI` occur, do `set cursorline` after 100ms.
+- When `WinEnter` and `BufEnter` occur, do `set cursorline` immediatly.
+- When `CursorMoved` and `BufEnter` occur, do `set nocursorline` immediatly.
 default setting is above.
 
 `g:autocursor_cursorcolumn`                            
 Configuration information about `cursorcolumn`.
 
-    - When `CursorHold` and `CursorHoldI` occur, do `set cursorcolumn` after 100ms.
-    - When `WinEnter` and `BufEnter` occur, do `set cursorcolumn` immediatly.
-    - When `CursorMoved` and `BufEnter` occur, do `set nocursorcolumn` immediatly.
-
+- When `CursorHold` and `CursorHoldI` occur, do `set cursorcolumn` after 100ms.
+- When `WinEnter` and `BufEnter` occur, do `set cursorcolumn` immediatly.
+- When `CursorMoved` and `BufEnter` occur, do `set nocursorcolumn` immediatly.
 default setting is above.
 
 # Example 
