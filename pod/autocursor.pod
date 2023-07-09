@@ -1,0 +1,251 @@
+---
+name: autocursor
+description: dps-autocursor is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events. This plugin offers a convenient way to quickly switch between the two settings without having to manually invoke `set cursorline` and `set cursorcolumn`.
+---
+
+=pod
+
+=head1 dps-autocursor
+
+Denops auto cursorline / cursorcolumn.
+
+=begin html
+
+<a href="https://asciinema.org/a/rRXjQa16Iwchj4NfaUTNPTFEs" target="_blank"><img src="https://asciinema.org/a/rRXjQa16Iwchj4NfaUTNPTFEs.svg" /></a>
+
+=end html
+
+=head1 Features X<autocursor-features>
+
+dps-autocursor is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events. This plugin offers a convenient way to quickly switch between the two settings without having to manually invoke `set cursorline` and `set cursorcolumn`.
+
+=head1 Installation X<autocursor-installation>
+
+If you use L<folke/lazy.nvim|https://github.com/folke/lazy.nvim>.
+
+  {
+    "yukimemi/dps-autocursor",
+    lazy = false,
+    dependencies = {
+      "vim-denops/denops.vim",
+    },
+  }
+
+If you use L<yukimemi/dvpm|https://github.com/yukimemi/dvpm>.
+
+  dvpm.add({ url: "yukimemi/dps-autocursor" });
+
+=head1 Requirements X<autocursor-requirements>
+
+=over
+
+=item [Deno - A modern runtime for JavaScript and TypeScript](https://deno.land/)
+
+=item [vim-denops/denops.vim: 🐜 An ecosystem of Vim/Neovim which allows developers to write cross-platform plugins in Deno](https://github.com/vim-denops/denops.vim)
+
+=back
+
+=head1 Usage X<autocursor-usage>
+
+No special settings are required.
+By default, `CursorHold`, `CursorHoldI`, `WinEnter` and `BufEnter` will automatically `set cursorline` and `set cursorcolumn`, and `CursorMoved` and `CursorMovedI` will `set nocursorline` and `set nocursorcolumn`.
+
+=head1 Commands X<autocursor-commands>
+
+C<:DisableAutoCursorLine>                              X<:DisableAutoCursorLine>
+Disable auto change cursorline.
+
+C<:EnableAutoCursorLine>                                X<:EnableAutoCursorLine>
+Enable auto change cursorline.
+
+C<:DisableAutoCursorColumn>                          X<:DisableAutoCursorColumn>
+Disable auto change cursorline.
+
+C<:EnableAutoCursorColumn>                            X<:EnableAutoCursorColumn>
+Enable auto change cursorline.
+
+=head1 Config X<autocursor-config>
+
+No settings are required. However, the following settings can be made if necessary.
+
+C<g:autocursor_debug>                        X<g:autocursor_debug>
+Enable debug messages.
+default is v:false
+
+C<g:autocursor_ignore_filetypes>                X<g:autocursor_ignore_filetypes>
+A list of filetypes to be ignored.
+default is ["ctrlp", "ddu-ff", "ddu-ff-filter", "ddu-filer", "dpswalk", "list", "qf", "quickfix"]
+
+C<g:autocursor_fix_interval>                        X<g:autocursor_fix_interval>
+Interval to fix cursorline and cursorcolumn state.
+An interval value to match the internal state, such as when changed from the outside.
+default is 5000 (millisec)
+
+C<g:autocursor_throttle>                                X<g:autocursor_throttle>
+Delay time when multiple events occur simultaneously.
+Events that occur simultaneously within this time are ignored.
+default is 300 (millisec)
+
+C<g:autocursor_cursorline>                            X<g:autocursor_cursorline>
+Configuration information about `cursorline`.
+
+=begin vim
+
+  let g:autocursor_cursorline = {
+    \ "enable": v:true,
+    \ "events": [
+    \   {
+    \     "name": ["CursorHold", "CursorHoldI"],
+    \     "set": v:true,
+    \     "wait": 100,
+    \   },
+    \   {
+    \     "name": ["WinEnter", "BufEnter"],
+    \     "set": v:true,
+    \     "wait": 0,
+    \   },
+    \   {
+    \     "name": ["CursorMoved", "CursorMovedI"],
+    \     "set": v:false,
+    \     "wait": 0,
+    \   },
+    \  ]
+    \ }
+
+=end vim
+
+=over
+
+=item When `CursorHold` and `CursorHoldI` occur, do `set cursorline` after 100ms.
+=item When `WinEnter` and `BufEnter` occur, do `set cursorline` immediatly.
+=item When `CursorMoved` and `BufEnter` occur, do `set nocursorline` immediatly.
+
+=back
+
+default setting is above.
+
+C<g:autocursor_cursorcolumn>                            X<g:autocursor_cursorcolumn>
+Configuration information about `cursorcolumn`.
+
+=begin vim
+
+  let g:autocursor_cursorcolumn = {
+    \ "enable": v:true,
+    \ "events": [
+    \   {
+    \     "name": ["CursorHold", "CursorHoldI"],
+    \     "set": v:true,
+    \     "wait": 100,
+    \   },
+    \   {
+    \     "name": ["WinEnter", "BufEnter"],
+    \     "set": v:true,
+    \     "wait": 0,
+    \   },
+    \   {
+    \     "name": ["CursorMoved", "CursorMovedI"],
+    \     "set": v:false,
+    \     "wait": 0,
+    \   },
+    \  ]
+    \ }
+
+=end vim
+
+=over
+
+=item When `CursorHold` and `CursorHoldI` occur, do `set cursorcolumn` after 100ms.
+=item When `WinEnter` and `BufEnter` occur, do `set cursorcolumn` immediatly.
+=item When `CursorMoved` and `BufEnter` occur, do `set nocursorcolumn` immediatly.
+
+=back
+
+default setting is above.
+
+=head1 Example X<autocursor-example>
+
+If you use L<folke/lazy.nvim|https://github.com/folke/lazy.nvim>.
+
+=begin lua
+
+  return {
+    "yukimemi/dps-autocursor",
+    lazy = false,
+
+    dependencies = {
+      "vim-denops/denops.vim",
+    },
+
+    init = function()
+      vim.g.autocursor_ignore_filetypes = {
+        "ctrlp",
+        "ddu-ff",
+        "ddu-ff-filter",
+        "quickfix"
+      }
+      vim.g.autocursor_cursorline = {
+        enable = true,
+        events = {
+          {
+            name = {
+              "FocusGained",
+              "FocusLost",
+              "WinEnter",
+              "VimResized",
+              "BufEnter",
+              "CmdwinLeave",
+              "CursorHold",
+              "CursorHoldI",
+              "InsertLeave",
+              "ModeChanged",
+              "TextChanged",
+            },
+            set = true,
+            wait = 0,
+          },
+          {
+            name = { "CursorMoved", "CursorMovedI", "InsertEnter" },
+            set = false,
+            wait = 1000,
+          },
+        },
+      }
+      vim.g.autocursor_cursorcolumn = {
+        enable = true,
+        events = {
+          {
+            name = {
+              "FocusGained",
+              "FocusLost",
+              "WinEnter",
+              "VimResized",
+              "BufEnter",
+              "CmdwinLeave",
+              "CursorHold",
+              "CursorHoldI",
+              "InsertLeave",
+              "ModeChanged",
+              "TextChanged",
+            },
+            set = true,
+            wait = 100,
+          },
+          {
+            name = { "CursorMoved", "CursorMovedI", "InsertEnter" },
+            set = false,
+            wait = 1000,
+          },
+        },
+      }
+    end,
+  }
+
+=end lua
+
+=head1 License X<autocursor-license>
+
+Licensed under MIT License.
+
+Copyright (c) 2023 yukimemi
+
+=cut
