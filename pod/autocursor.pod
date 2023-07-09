@@ -37,13 +37,10 @@ If you use L<yukimemi/dvpm|https://github.com/yukimemi/dvpm>.
 
 =head1 Requirements X<autocursor-requirements>
 
-=over
 
 =item [Deno - A modern runtime for JavaScript and TypeScript](https://deno.land/)
 
 =item [vim-denops/denops.vim: 🐜 An ecosystem of Vim/Neovim which allows developers to write cross-platform plugins in Deno](https://github.com/vim-denops/denops.vim)
-
-=back
 
 =head1 Usage X<autocursor-usage>
 
@@ -59,10 +56,10 @@ C<:EnableAutoCursorLine>                                X<:EnableAutoCursorLine>
 Enable auto change cursorline.
 
 C<:DisableAutoCursorColumn>                          X<:DisableAutoCursorColumn>
-Disable auto change cursorline.
+Disable auto change cursorcolumn.
 
 C<:EnableAutoCursorColumn>                            X<:EnableAutoCursorColumn>
-Enable auto change cursorline.
+Enable auto change cursorcolumn.
 
 =head1 Config X<autocursor-config>
 
@@ -114,13 +111,11 @@ Configuration information about `cursorline`.
 
 =end vim
 
-=over
-
 =item When `CursorHold` and `CursorHoldI` occur, do `set cursorline` after 100ms.
-=item When `WinEnter` and `BufEnter` occur, do `set cursorline` immediatly.
-=item When `CursorMoved` and `BufEnter` occur, do `set nocursorline` immediatly.
 
-=back
+=item When `WinEnter` and `BufEnter` occur, do `set cursorline` immediatly.
+
+=item When `CursorMoved` and `BufEnter` occur, do `set nocursorline` immediatly.
 
 default setting is above.
 
@@ -152,13 +147,11 @@ Configuration information about `cursorcolumn`.
 
 =end vim
 
-=over
-
 =item When `CursorHold` and `CursorHoldI` occur, do `set cursorcolumn` after 100ms.
-=item When `WinEnter` and `BufEnter` occur, do `set cursorcolumn` immediatly.
-=item When `CursorMoved` and `BufEnter` occur, do `set nocursorcolumn` immediatly.
 
-=back
+=item When `WinEnter` and `BufEnter` occur, do `set cursorcolumn` immediatly.
+
+=item When `CursorMoved` and `BufEnter` occur, do `set nocursorcolumn` immediatly.
 
 default setting is above.
 
