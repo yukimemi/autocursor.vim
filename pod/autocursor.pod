@@ -65,8 +65,12 @@ Enable auto change cursorcolumn.
 
 No settings are required. However, the following settings can be made if necessary.
 
-C<g:autocursor_debug>                        X<g:autocursor_debug>
+C<g:autocursor_debug>                                      X<g:autocursor_debug>
 Enable debug messages.
+default is v:false
+
+C<g:autocursor_notify>                                    X<g:autocursor_notify>
+Wheather to notify when cursorline or cursorcolumn option is changed.
 default is v:false
 
 C<g:autocursor_ignore_filetypes>                X<g:autocursor_ignore_filetypes>

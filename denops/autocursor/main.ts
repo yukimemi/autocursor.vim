@@ -1,12 +1,18 @@
-import * as autocmd from "https://deno.land/x/denops_std@v5.0.0/autocmd/mod.ts";
-import * as helper from "https://deno.land/x/denops_std@v5.0.0/helper/mod.ts";
-import * as op from "https://deno.land/x/denops_std@v5.0.0/option/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v5.0.0/variable/mod.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v5.0.0/mod.ts";
-import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
-import { assertBoolean, assertNumber } from "https://deno.land/x/unknownutil@v2.1.1/mod.ts";
+// =============================================================================
+// File        : main.ts
+// Author      : yukimemi
+// Last Change : 2023/07/15 13:27:09.
+// =============================================================================
 
-const version = "20230709_230850";
+import * as autocmd from "https://deno.land/x/denops_std@v5.0.1/autocmd/mod.ts";
+import * as helper from "https://deno.land/x/denops_std@v5.0.1/helper/mod.ts";
+import * as op from "https://deno.land/x/denops_std@v5.0.1/option/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v5.0.1/variable/mod.ts";
+import type { Denops } from "https://deno.land/x/denops_std@v5.0.1/mod.ts";
+import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
+import { assert, is } from "https://deno.land/x/unknownutil@v3.2.0/mod.ts";
+
+const version = "20230715_132709";
 const lineWait = 100;
 const columnWait = 100;
 
@@ -115,9 +121,19 @@ function throttle(id: string, fn: () => void, delay: number, wait: number) {
   throttles[id] = [lastTimerId, updateTime];
 }
 
+async function notifyMsg(denops: Denops, msg: string, notify = false) {
+  if (notify && denops.meta.host === "nvim") {
+    await helper.execute(
+      denops,
+      `lua vim.notify([[${msg}]], vim.log.levels.INFO)`,
+    );
+  }
+}
+
 export async function main(denops: Denops): Promise<void> {
   // debug.
   const debug = await vars.g.get(denops, "autocursor_debug", false);
+  const notify = await vars.g.get(denops, "autocursor_notify", false);
   // fix state interval.
   const fixInterval = await vars.g.get(denops, "autocursor_fix_interval", 5000);
   // throttle.
@@ -158,11 +174,11 @@ export async function main(denops: Denops): Promise<void> {
     ): Promise<void> {
       try {
         const opt = option as LineOrColumn;
-        assertNumber(wait);
+        assert(wait, is.Number);
         throttle(
           opt,
           async () => {
-            assertBoolean(set);
+            assert(set, is.Boolean);
             if (opt === "cursorline") {
               if (set === cfgLine.state || !cfgLine.enable) {
                 clog(
@@ -193,9 +209,11 @@ export async function main(denops: Denops): Promise<void> {
             if (set) {
               clog(`setOption: set ${option}`);
               await op[opt].set(denops, true);
+              await notifyMsg(denops, `set ${option}`, notify);
             } else {
               clog(`setOption: set no${option}`);
               await op[opt].set(denops, false);
+              await notifyMsg(denops, `set no${option}`, notify);
             }
           },
           throttleTime,
@@ -207,7 +225,7 @@ export async function main(denops: Denops): Promise<void> {
     },
 
     async changeCursor(enable: unknown, option: unknown): Promise<void> {
-      assertBoolean(enable);
+      assert(enable, is.Boolean);
       const opt = option as LineOrColumn;
       if (!enable) {
         clog(`set no${opt}`);
@@ -223,7 +241,7 @@ export async function main(denops: Denops): Promise<void> {
 
     // deno-lint-ignore require-await
     async fixState(interval: unknown): Promise<void> {
-      assertNumber(interval);
+      assert(interval, is.Number);
       setInterval(async () => {
         cfgLine.state = (await op.cursorline.get(denops)) ? true : false;
         cfgColumn.state = (await op.cursorcolumn.get(denops)) ? true : false;

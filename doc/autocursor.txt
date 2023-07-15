@@ -6,14 +6,14 @@ Denops auto cursorline / cursorcolumn.
 
 =============================================================================
 Features ~
-*autocursor-features*
+                                                        *autocursor-features*
 
 dps-autocursor is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events.
 This plugin offers a convenient way to quickly switch between the two settings without having to manually invoke `set cursorline` and `set cursorcolumn`.
 
 =============================================================================
 Installation ~
-*autocursor-installation*
+                                                    *autocursor-installation*
 
 If you use folke/lazy.nvim |https://github.com/folke/lazy.nvim|.
 
@@ -35,20 +35,20 @@ If you use yukimemi/dvpm |https://github.com/yukimemi/dvpm|.
 
 =============================================================================
 Requirements ~
-*autocursor-requirements*
+                                                    *autocursor-requirements*
 
 - [Deno - A modern runtime for JavaScript and TypeScript](https://deno.land/)
 - [vim-denops/denops.vim: 🐜 An ecosystem of Vim/Neovim which allows developers to write cross-platform plugins in Deno](https://github.com/vim-denops/denops.vim)
 =============================================================================
 Usage ~
-*autocursor-usage*
+                                                           *autocursor-usage*
 
 No special settings are required.
 By default, `CursorHold`, `CursorHoldI`, `WinEnter` and `BufEnter` will automatically `set cursorline` and `set cursorcolumn`, and `CursorMoved` and `CursorMovedI` will `set nocursorline` and `set nocursorcolumn`.
 
 =============================================================================
 Commands ~
-*autocursor-commands*
+                                                        *autocursor-commands*
 
 `:DisableAutoCursorLine`                              *:DisableAutoCursorLine*
 Disable auto change cursorline.
@@ -64,12 +64,16 @@ Enable auto change cursorcolumn.
 
 =============================================================================
 Config ~
-*autocursor-config*
+                                                          *autocursor-config*
 
 No settings are required. However, the following settings can be made if necessary.
 
-`g:autocursor_debug`                        *g:autocursor_debug*
+`g:autocursor_debug`                                      *g:autocursor_debug*
 Enable debug messages.
+default is v:false
+
+`g:autocursor_notify`                                    *g:autocursor_notify*
+Wheather to notify when cursorline or cursorcolumn option is changed.
 default is v:false
 
 `g:autocursor_ignore_filetypes`                *g:autocursor_ignore_filetypes*
@@ -150,7 +154,7 @@ default setting is below.
 
 =============================================================================
 Example ~
-*autocursor-example*
+                                                         *autocursor-example*
 
 If you use folke/lazy.nvim |https://github.com/folke/lazy.nvim|.
 
@@ -230,7 +234,7 @@ If you use folke/lazy.nvim |https://github.com/folke/lazy.nvim|.
 
 =============================================================================
 License ~
-*autocursor-license*
+                                                         *autocursor-license*
 
 Licensed under MIT License.
 

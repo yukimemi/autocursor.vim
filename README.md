@@ -2,11 +2,7 @@
 
 Denops auto cursorline / cursorcolumn.
 
-
-
-<a href="https://asciinema.org/a/rRXjQa16Iwchj4NfaUTNPTFEs" target="_blank"><img src="https://asciinema.org/a/rRXjQa16Iwchj4NfaUTNPTFEs.svg" /></a>
-
-# Features 
+<a href="https://asciinema.org/a/rRXjQa16Iwchj4NfaUTNPTFEs" target="_blank"><img src="https://asciinema.org/a/rRXjQa16Iwchj4NfaUTNPTFEs.svg" /></a># Features 
 
 dps-autocursor is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events.
 This plugin offers a convenient way to quickly switch between the two settings without having to manually invoke `set cursorline` and `set cursorcolumn`.
@@ -58,8 +54,12 @@ Enable auto change cursorcolumn.
 
 No settings are required. However, the following settings can be made if necessary.
 
-`g:autocursor_debug`                        
+`g:autocursor_debug`                                      
 Enable debug messages.
+default is v:false
+
+`g:autocursor_notify`                                    
+Wheather to notify when cursorline or cursorcolumn option is changed.
 default is v:false
 
 `g:autocursor_ignore_filetypes`                
