@@ -14,7 +14,8 @@ This plugin offers a convenient way to quickly switch between the two settings w
 
 If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
 
-```
+```lua
+
   {
     "yukimemi/dps-autocursor",
     lazy = false,
@@ -22,12 +23,15 @@ If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
       "vim-denops/denops.vim",
     },
   }
+
 ```
 
 If you use [yukimemi/dvpm](https://github.com/yukimemi/dvpm).
 
-```
+```typescript
+
   dvpm.add({ url: "yukimemi/dps-autocursor" });
+
 ```
 
 # Requirements 
@@ -83,7 +87,8 @@ default is 300 (millisec)
 Configuration information about `cursorline`.
 default setting is below.
 
-```
+```vim
+
   let g:autocursor_cursorline = {
     \ "enable": v:true,
     \ "events": [
@@ -104,6 +109,7 @@ default setting is below.
     \   },
     \  ]
     \ }
+
 ```
 
     - When `CursorHold` and `CursorHoldI` occur, do `set cursorline` after 100ms.
@@ -114,7 +120,8 @@ default setting is below.
 Configuration information about `cursorcolumn`.
 default setting is below.
 
-```
+```vim
+
   let g:autocursor_cursorcolumn = {
     \ "enable": v:true,
     \ "events": [
@@ -135,6 +142,7 @@ default setting is below.
     \   },
     \  ]
     \ }
+
 ```
 
     - When `CursorHold` and `CursorHoldI` occur, do `set cursorcolumn` after 100ms.
@@ -145,7 +153,8 @@ default setting is below.
 
 If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
 
-```
+```lua
+
   return {
     "yukimemi/dps-autocursor",
     lazy = false,
@@ -217,6 +226,7 @@ If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
       }
     end,
   }
+
 ```
 
 # License 
