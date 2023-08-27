@@ -15,23 +15,19 @@ This plugin offers a convenient way to quickly switch between the two settings w
 If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
 
 ```lua
-
-  {
-    "yukimemi/dps-autocursor",
-    lazy = false,
-    dependencies = {
-      "vim-denops/denops.vim",
-    },
-  }
-
+{
+  "yukimemi/dps-autocursor",
+  lazy = false,
+  dependencies = {
+    "vim-denops/denops.vim",
+  },
+}
 ```
 
 If you use [yukimemi/dvpm](https://github.com/yukimemi/dvpm).
 
 ```typescript
-
-  dvpm.add({ url: "yukimemi/dps-autocursor" });
-
+dvpm.add({ url: "yukimemi/dps-autocursor" });
 ```
 
 # Requirements 
@@ -88,28 +84,26 @@ Configuration information about `cursorline`.
 default setting is below.
 
 ```vim
-
-  let g:autocursor_cursorline = {
-    \ "enable": v:true,
-    \ "events": [
-    \   {
-    \     "name": ["CursorHold", "CursorHoldI"],
-    \     "set": v:true,
-    \     "wait": 100,
-    \   },
-    \   {
-    \     "name": ["WinEnter", "BufEnter"],
-    \     "set": v:true,
-    \     "wait": 0,
-    \   },
-    \   {
-    \     "name": ["CursorMoved", "CursorMovedI"],
-    \     "set": v:false,
-    \     "wait": 0,
-    \   },
-    \  ]
-    \ }
-
+let g:autocursor_cursorline = {
+  \ "enable": v:true,
+  \ "events": [
+  \   {
+  \     "name": ["CursorHold", "CursorHoldI"],
+  \     "set": v:true,
+  \     "wait": 100,
+  \   },
+  \   {
+  \     "name": ["WinEnter", "BufEnter"],
+  \     "set": v:true,
+  \     "wait": 0,
+  \   },
+  \   {
+  \     "name": ["CursorMoved", "CursorMovedI"],
+  \     "set": v:false,
+  \     "wait": 0,
+  \   },
+  \  ]
+  \ }
 ```
 
     - When `CursorHold` and `CursorHoldI` occur, do `set cursorline` after 100ms.
@@ -121,28 +115,26 @@ Configuration information about `cursorcolumn`.
 default setting is below.
 
 ```vim
-
-  let g:autocursor_cursorcolumn = {
-    \ "enable": v:true,
-    \ "events": [
-    \   {
-    \     "name": ["CursorHold", "CursorHoldI"],
-    \     "set": v:true,
-    \     "wait": 100,
-    \   },
-    \   {
-    \     "name": ["WinEnter", "BufEnter"],
-    \     "set": v:true,
-    \     "wait": 0,
-    \   },
-    \   {
-    \     "name": ["CursorMoved", "CursorMovedI"],
-    \     "set": v:false,
-    \     "wait": 0,
-    \   },
-    \  ]
-    \ }
-
+let g:autocursor_cursorcolumn = {
+  \ "enable": v:true,
+  \ "events": [
+  \   {
+  \     "name": ["CursorHold", "CursorHoldI"],
+  \     "set": v:true,
+  \     "wait": 100,
+  \   },
+  \   {
+  \     "name": ["WinEnter", "BufEnter"],
+  \     "set": v:true,
+  \     "wait": 0,
+  \   },
+  \   {
+  \     "name": ["CursorMoved", "CursorMovedI"],
+  \     "set": v:false,
+  \     "wait": 0,
+  \   },
+  \  ]
+  \ }
 ```
 
     - When `CursorHold` and `CursorHoldI` occur, do `set cursorcolumn` after 100ms.
@@ -154,79 +146,77 @@ default setting is below.
 If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
 
 ```lua
+return {
+  "yukimemi/dps-autocursor",
+  lazy = false,
 
-  return {
-    "yukimemi/dps-autocursor",
-    lazy = false,
+  dependencies = {
+    "vim-denops/denops.vim",
+  },
 
-    dependencies = {
-      "vim-denops/denops.vim",
-    },
-
-    init = function()
-      vim.g.autocursor_ignore_filetypes = {
-        "ctrlp",
-        "ddu-ff",
-        "ddu-ff-filter",
-        "quickfix"
-      }
-      vim.g.autocursor_cursorline = {
-        enable = true,
-        events = {
-          {
-            name = {
-              "FocusGained",
-              "FocusLost",
-              "WinEnter",
-              "VimResized",
-              "BufEnter",
-              "CmdwinLeave",
-              "CursorHold",
-              "CursorHoldI",
-              "InsertLeave",
-              "ModeChanged",
-              "TextChanged",
-            },
-            set = true,
-            wait = 0,
+  init = function()
+    vim.g.autocursor_ignore_filetypes = {
+      "ctrlp",
+      "ddu-ff",
+      "ddu-ff-filter",
+      "quickfix"
+    }
+    vim.g.autocursor_cursorline = {
+      enable = true,
+      events = {
+        {
+          name = {
+            "FocusGained",
+            "FocusLost",
+            "WinEnter",
+            "VimResized",
+            "BufEnter",
+            "CmdwinLeave",
+            "CursorHold",
+            "CursorHoldI",
+            "InsertLeave",
+            "ModeChanged",
+            "TextChanged",
           },
-          {
-            name = { "CursorMoved", "CursorMovedI", "InsertEnter" },
-            set = false,
-            wait = 1000,
-          },
+          set = true,
+          wait = 0,
         },
-      }
-      vim.g.autocursor_cursorcolumn = {
-        enable = true,
-        events = {
-          {
-            name = {
-              "FocusGained",
-              "FocusLost",
-              "WinEnter",
-              "VimResized",
-              "BufEnter",
-              "CmdwinLeave",
-              "CursorHold",
-              "CursorHoldI",
-              "InsertLeave",
-              "ModeChanged",
-              "TextChanged",
-            },
-            set = true,
-            wait = 100,
-          },
-          {
-            name = { "CursorMoved", "CursorMovedI", "InsertEnter" },
-            set = false,
-            wait = 1000,
-          },
+        {
+          name = { "CursorMoved", "CursorMovedI", "InsertEnter" },
+          set = false,
+          wait = 1000,
         },
-      }
-    end,
-  }
-
+      },
+    }
+    vim.g.autocursor_cursorcolumn = {
+      enable = true,
+      events = {
+        {
+          name = {
+            "FocusGained",
+            "FocusLost",
+            "WinEnter",
+            "VimResized",
+            "BufEnter",
+            "CmdwinLeave",
+            "CursorHold",
+            "CursorHoldI",
+            "InsertLeave",
+            "ModeChanged",
+            "TextChanged",
+          },
+          set = true,
+          wait = 100,
+        },
+        {
+          name = { "CursorMoved", "CursorMovedI", "InsertEnter" },
+          set = false,
+          wait = 1000,
+        },
+      },
+    }
+  end,
+}
 ```
 
 # License 
