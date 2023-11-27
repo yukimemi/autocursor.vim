@@ -10,7 +10,7 @@ import * as op from "https://deno.land/x/denops_std@v5.0.2/option/mod.ts";
 import * as vars from "https://deno.land/x/denops_std@v5.0.2/variable/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v5.0.2/mod.ts";
 import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
-import { assert, is } from "https://deno.land/x/unknownutil@v3.10.0/mod.ts";
+import { assert, is } from "https://deno.land/x/unknownutil@v3.11.0/mod.ts";
 
 const version = "20230715_132709";
 const lineWait = 100;
