@@ -4,11 +4,11 @@
 // Last Change : 2023/07/15 13:27:09.
 // =============================================================================
 
-import * as autocmd from "https://deno.land/x/denops_std@v5.1.0/autocmd/mod.ts";
-import * as helper from "https://deno.land/x/denops_std@v5.1.0/helper/mod.ts";
-import * as op from "https://deno.land/x/denops_std@v5.1.0/option/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v5.1.0/variable/mod.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v5.1.0/mod.ts";
+import * as autocmd from "https://deno.land/x/denops_std@v5.2.0/autocmd/mod.ts";
+import * as helper from "https://deno.land/x/denops_std@v5.2.0/helper/mod.ts";
+import * as op from "https://deno.land/x/denops_std@v5.2.0/option/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v5.2.0/variable/mod.ts";
+import type { Denops } from "https://deno.land/x/denops_std@v5.2.0/mod.ts";
 import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
 import { assert, is } from "https://deno.land/x/unknownutil@v3.11.0/mod.ts";
 
