@@ -1,7 +1,7 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2023/07/15 13:27:09.
+// Last Change : 2024/01/03 11:33:14.
 // =============================================================================
 
 import * as autocmd from "https://deno.land/x/denops_std@v5.2.0/autocmd/mod.ts";
@@ -9,10 +9,9 @@ import * as helper from "https://deno.land/x/denops_std@v5.2.0/helper/mod.ts";
 import * as op from "https://deno.land/x/denops_std@v5.2.0/option/mod.ts";
 import * as vars from "https://deno.land/x/denops_std@v5.2.0/variable/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v5.2.0/mod.ts";
-import { merge } from "https://cdn.skypack.dev/lodash@4.17.21";
 import { assert, is } from "https://deno.land/x/unknownutil@v3.11.0/mod.ts";
 
-const version = "20230715_132709";
+const version = "20240103_113314";
 const lineWait = 100;
 const columnWait = 100;
 
@@ -87,7 +86,7 @@ let ignoreFileTypes = [
   "quickfix",
 ];
 
-function uniqueEvent(events: Event[]) {
+function uniqueEvent(events: Event[]): Event[] {
   const unique = new Set();
   return events
     .map((event) =>
@@ -145,17 +144,29 @@ export async function main(denops: Denops): Promise<void> {
     }
   };
 
-  // Merge user option.
-  const userCfgLine = (await vars.g.get(denops, "autocursor_cursorline")) as Cursor;
-  const userCfgColumn = (await vars.g.get(denops, "autocursor_cursorcolumn")) as Cursor;
+  // Disable the default settings if the user has configured them.
+  cfgLine = (await vars.g.get(denops, "autocursor_cursorline", cfgLine)) as Cursor;
+  cfgLine = {
+    ...cfgLine,
+    option: "cursorline",
+    state: false,
+    events: uniqueEvent(cfgLine.events),
+  };
+
+  cfgColumn = (await vars.g.get(denops, "autocursor_cursorcolumn", cfgColumn)) as Cursor;
+  cfgColumn = {
+    ...cfgColumn,
+    option: "cursorcolumn",
+    state: false,
+    events: uniqueEvent(cfgColumn.events),
+  };
+
   ignoreFileTypes = await vars.g.get(
     denops,
     "autocursor_ignore_filetypes",
     ignoreFileTypes,
   );
 
-  cfgLine = merge(cfgLine, userCfgLine);
-  cfgColumn = merge(cfgColumn, userCfgColumn);
   clog({
     debug,
     fixInterval,
@@ -268,9 +279,7 @@ export async function main(denops: Denops): Promise<void> {
   await autocmd.group(denops, "autocursor", (helper) => {
     helper.remove();
     [cfgLine, cfgColumn].forEach((cfg) => {
-      const events = uniqueEvent(cfg.events);
-      clog({ events });
-      events.forEach((e) => {
+      cfg.events.forEach((e) => {
         helper.define(
           e.name,
           "*",
