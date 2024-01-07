@@ -9,7 +9,7 @@ import * as helper from "https://deno.land/x/denops_std@v5.2.0/helper/mod.ts";
 import * as op from "https://deno.land/x/denops_std@v5.2.0/option/mod.ts";
 import * as vars from "https://deno.land/x/denops_std@v5.2.0/variable/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v5.2.0/mod.ts";
-import { assert, is } from "https://deno.land/x/unknownutil@v3.11.0/mod.ts";
+import { assert, is } from "https://deno.land/x/unknownutil@v3.13.0/mod.ts";
 
 const version = "20240103_113314";
 const lineWait = 100;
