@@ -4,11 +4,11 @@
 // Last Change : 2024/01/03 11:33:14.
 // =============================================================================
 
-import * as autocmd from "https://deno.land/x/denops_std@v6.0.0/autocmd/mod.ts";
-import * as helper from "https://deno.land/x/denops_std@v6.0.0/helper/mod.ts";
-import * as op from "https://deno.land/x/denops_std@v6.0.0/option/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v6.0.0/variable/mod.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v6.0.0/mod.ts";
+import * as autocmd from "https://deno.land/x/denops_std@v6.0.1/autocmd/mod.ts";
+import * as helper from "https://deno.land/x/denops_std@v6.0.1/helper/mod.ts";
+import * as op from "https://deno.land/x/denops_std@v6.0.1/option/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v6.0.1/variable/mod.ts";
+import type { Denops } from "https://deno.land/x/denops_std@v6.0.1/mod.ts";
 import { assert, is } from "https://deno.land/x/unknownutil@v3.14.1/mod.ts";
 
 const version = "20240103_113314";
