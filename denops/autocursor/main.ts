@@ -1,7 +1,7 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2024/01/03 11:33:14.
+// Last Change : 2024/04/07 10:12:22.
 // =============================================================================
 
 import * as autocmd from "https://deno.land/x/denops_std@v6.4.0/autocmd/mod.ts";
@@ -11,7 +11,7 @@ import * as vars from "https://deno.land/x/denops_std@v6.4.0/variable/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v6.4.0/mod.ts";
 import { assert, is } from "https://deno.land/x/unknownutil@v3.17.2/mod.ts";
 
-const version = "20240103_113314";
+const version = "20240407_101222";
 const lineWait = 100;
 const columnWait = 100;
 
@@ -296,5 +296,5 @@ export async function main(denops: Denops): Promise<void> {
     );
   });
 
-  clog(`dps-autocursor has loaded. ver: ${version}`);
+  clog(`autocursor.vim has loaded. ver: ${version}`);
 }

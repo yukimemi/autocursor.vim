@@ -1,13 +1,12 @@
-# dps-autocursor
+# autocursor.vim
 
 Denops auto cursorline / cursorcolumn.
-
 
 <a href="https://asciinema.org/a/rRXjQa16Iwchj4NfaUTNPTFEs" target="_blank"><img src="https://asciinema.org/a/rRXjQa16Iwchj4NfaUTNPTFEs.svg" /></a>
 
 # Features 
 
-dps-autocursor is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events.
+autocursor.vim is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events.
 This plugin offers a convenient way to quickly switch between the two settings without having to manually invoke `set cursorline` and `set cursorcolumn`.
 
 # Installation 
@@ -16,7 +15,7 @@ If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
 
 ```lua
 {
-  "yukimemi/dps-autocursor",
+  "yukimemi/autocursor.vim",
   lazy = false,
   dependencies = {
     "vim-denops/denops.vim",
@@ -27,7 +26,7 @@ If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
 If you use [yukimemi/dvpm](https://github.com/yukimemi/dvpm).
 
 ```typescript
-dvpm.add({ url: "yukimemi/dps-autocursor" });
+dvpm.add({ url: "yukimemi/autocursor.vim" });
 ```
 
 # Requirements 
@@ -147,7 +146,7 @@ If you use [folke/lazy.nvim](https://github.com/folke/lazy.nvim).
 
 ```lua
 return {
-  "yukimemi/dps-autocursor",
+  "yukimemi/autocursor.vim",
   lazy = false,
 
   dependencies = {

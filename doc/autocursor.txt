@@ -1,6 +1,6 @@
-*dps-autocursor.txt*                    Denops auto cursorline / cursorcolumn
+*autocursor.txt*                        Denops auto cursorline / cursorcolumn
 =============================================================================
-dps-autocursor~
+autocursor.vim ~
 
 Denops auto cursorline / cursorcolumn.
 
@@ -8,7 +8,7 @@ Denops auto cursorline / cursorcolumn.
 Features ~
                                                         *autocursor-features*
 
-dps-autocursor is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events.
+autocursor.vim is a Vim plugin that automatically switches between cursorline and cursorcolumn based on Vim events.
 This plugin offers a convenient way to quickly switch between the two settings without having to manually invoke `set cursorline` and `set cursorcolumn`.
 
 =============================================================================
@@ -19,7 +19,7 @@ If you use folke/lazy.nvim |https://github.com/folke/lazy.nvim|.
 
 >
 	{
-	  "yukimemi/dps-autocursor",
+	  "yukimemi/autocursor.vim",
 	  lazy = false,
 	  dependencies = {
 	    "vim-denops/denops.vim",
@@ -30,7 +30,7 @@ If you use folke/lazy.nvim |https://github.com/folke/lazy.nvim|.
 If you use yukimemi/dvpm |https://github.com/yukimemi/dvpm|.
 
 >
-	dvpm.add({ url: "yukimemi/dps-autocursor" });
+	dvpm.add({ url: "yukimemi/autocursor.vim" });
 <
 
 =============================================================================
@@ -50,16 +50,16 @@ By default, `CursorHold`, `CursorHoldI`, `WinEnter` and `BufEnter` will automati
 Commands ~
                                                         *autocursor-commands*
 
-`:DisableAutoCursorLine`                              *:DisableAutoCursorLine*
+`:DisableAutoCursorLine`                             *:DisableAutoCursorLine*
 Disable auto change cursorline.
 
-`:EnableAutoCursorLine`                                *:EnableAutoCursorLine*
+`:EnableAutoCursorLine`                               *:EnableAutoCursorLine*
 Enable auto change cursorline.
 
-`:DisableAutoCursorColumn`                          *:DisableAutoCursorColumn*
+`:DisableAutoCursorColumn`                         *:DisableAutoCursorColumn*
 Disable auto change cursorcolumn.
 
-`:EnableAutoCursorColumn`                            *:EnableAutoCursorColumn*
+`:EnableAutoCursorColumn`                           *:EnableAutoCursorColumn*
 Enable auto change cursorcolumn.
 
 =============================================================================
@@ -68,29 +68,29 @@ Config ~
 
 No settings are required. However, the following settings can be made if necessary.
 
-`g:autocursor_debug`                                      *g:autocursor_debug*
+`g:autocursor_debug`                                     *g:autocursor_debug*
 Enable debug messages.
 default is v:false
 
-`g:autocursor_notify`                                    *g:autocursor_notify*
+`g:autocursor_notify`                                   *g:autocursor_notify*
 Wheather to notify when cursorline or cursorcolumn option is changed.
 default is v:false
 
-`g:autocursor_ignore_filetypes`                *g:autocursor_ignore_filetypes*
+`g:autocursor_ignore_filetypes`               *g:autocursor_ignore_filetypes*
 A list of filetypes to be ignored.
 default is ["ctrlp", "ddu-ff", "ddu-ff-filter", "ddu-filer", "dpswalk", "list", "qf", "quickfix"]
 
-`g:autocursor_fix_interval`                        *g:autocursor_fix_interval*
+`g:autocursor_fix_interval`                       *g:autocursor_fix_interval*
 Interval to fix cursorline and cursorcolumn state.
 An interval value to match the internal state, such as when changed from the outside.
 default is 5000 (millisec)
 
-`g:autocursor_throttle`                                *g:autocursor_throttle*
+`g:autocursor_throttle`                               *g:autocursor_throttle*
 Delay time when multiple events occur simultaneously.
 Events that occur simultaneously within this time are ignored.
 default is 300 (millisec)
 
-`g:autocursor_cursorline`                            *g:autocursor_cursorline*
+`g:autocursor_cursorline`                           *g:autocursor_cursorline*
 Configuration information about `cursorline`.
 default setting is below.
 
@@ -121,7 +121,7 @@ default setting is below.
     - When `WinEnter` and `BufEnter` occur, do `set cursorline` immediatly.
     - When `CursorMoved` and `BufEnter` occur, do `set nocursorline` immediatly.
 
-`g:autocursor_cursorcolumn`                            *g:autocursor_cursorcolumn*
+`g:autocursor_cursorcolumn`                       *g:autocursor_cursorcolumn*
 Configuration information about `cursorcolumn`.
 default setting is below.
 
@@ -160,13 +160,13 @@ If you use folke/lazy.nvim |https://github.com/folke/lazy.nvim|.
 
 >
 	return {
-	  "yukimemi/dps-autocursor",
+	  "yukimemi/autocursor.vim",
 	  lazy = false,
-	
+
 	  dependencies = {
 	    "vim-denops/denops.vim",
 	  },
-	
+
 	  init = function()
 	    vim.g.autocursor_ignore_filetypes = {
 	      "ctrlp",
