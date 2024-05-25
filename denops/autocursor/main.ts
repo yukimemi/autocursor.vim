@@ -1,7 +1,7 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2024/04/07 10:12:22.
+// Last Change : 2024/05/25 21:49:08.
 // =============================================================================
 
 import * as autocmd from "https://deno.land/x/denops_std@v6.5.0/autocmd/mod.ts";
@@ -9,26 +9,30 @@ import * as helper from "https://deno.land/x/denops_std@v6.5.0/helper/mod.ts";
 import * as op from "https://deno.land/x/denops_std@v6.5.0/option/mod.ts";
 import * as vars from "https://deno.land/x/denops_std@v6.5.0/variable/mod.ts";
 import type { Denops } from "https://deno.land/x/denops_std@v6.5.0/mod.ts";
-import { assert, is } from "https://deno.land/x/unknownutil@v3.18.1/mod.ts";
+import { z } from "https://deno.land/x/zod@v3.23.8/mod.ts";
 
-const version = "20240407_101222";
+const version = "20240525_214908";
 const lineWait = 100;
 const columnWait = 100;
 
-type LineOrColumn = "cursorline" | "cursorcolumn";
+const LineOrColumnSchema = z.literal("cursorline").or(z.literal("cursorcolumn")).optional();
+type LineOrColumn = z.infer<typeof LineOrColumnSchema>;
 
-type Event = {
-  name: autocmd.AutocmdEvent | autocmd.AutocmdEvent[];
-  set: boolean;
-  wait: number;
-};
+const AutocmdEventSchema = z.any().transform((v) => v as autocmd.AutocmdEvent);
+const EventSchema = z.object({
+  name: z.union([AutocmdEventSchema, z.array(AutocmdEventSchema)]),
+  set: z.boolean(),
+  wait: z.number(),
+});
+type Event = z.infer<typeof EventSchema>;
 
-type Cursor = {
-  enable: boolean;
-  option: LineOrColumn;
-  state: boolean;
-  events: Event[];
-};
+const CursorSchema = z.object({
+  enable: z.boolean(),
+  option: LineOrColumnSchema,
+  state: z.boolean().default(false),
+  events: z.array(EventSchema),
+});
+type Cursor = z.infer<typeof CursorSchema>;
 
 let cfgLine: Cursor = {
   enable: true,
@@ -145,7 +149,7 @@ export async function main(denops: Denops): Promise<void> {
   };
 
   // Disable the default settings if the user has configured them.
-  cfgLine = (await vars.g.get(denops, "autocursor_cursorline", cfgLine)) as Cursor;
+  cfgLine = CursorSchema.parse(await vars.g.get(denops, "autocursor_cursorline", cfgLine));
   cfgLine = {
     ...cfgLine,
     option: "cursorline",
@@ -153,7 +157,7 @@ export async function main(denops: Denops): Promise<void> {
     events: uniqueEvent(cfgLine.events),
   };
 
-  cfgColumn = (await vars.g.get(denops, "autocursor_cursorcolumn", cfgColumn)) as Cursor;
+  cfgColumn = CursorSchema.parse(await vars.g.get(denops, "autocursor_cursorcolumn", cfgColumn));
   cfgColumn = {
     ...cfgColumn,
     option: "cursorcolumn",
@@ -184,12 +188,12 @@ export async function main(denops: Denops): Promise<void> {
       option: unknown,
     ): Promise<void> {
       try {
-        const opt = option as LineOrColumn;
-        assert(wait, is.Number);
+        const opt: LineOrColumn = LineOrColumnSchema.parse(option);
+        const waitParsed = z.number().parse(wait);
         throttle(
           opt,
           async () => {
-            assert(set, is.Boolean);
+            const setParsed = z.boolean().parse(set);
             if (opt === "cursorline") {
               if (set === cfgLine.state || !cfgLine.enable) {
                 clog(
@@ -212,10 +216,10 @@ export async function main(denops: Denops): Promise<void> {
               return;
             }
             if (opt === "cursorline") {
-              cfgLine.state = set;
+              cfgLine.state = setParsed;
             }
             if (opt === "cursorcolumn") {
-              cfgColumn.state = set;
+              cfgColumn.state = setParsed;
             }
             if (set) {
               clog(`setOption: set ${option}`);
@@ -228,7 +232,7 @@ export async function main(denops: Denops): Promise<void> {
             }
           },
           throttleTime,
-          wait,
+          waitParsed,
         );
       } catch (e) {
         clog(e);
@@ -236,30 +240,30 @@ export async function main(denops: Denops): Promise<void> {
     },
 
     async changeCursor(enable: unknown, option: unknown): Promise<void> {
-      assert(enable, is.Boolean);
-      const opt = option as LineOrColumn;
+      const enableParsed = z.boolean().parse(enable);
+      const opt: LineOrColumn = LineOrColumnSchema.parse(option);
       if (!enable) {
         clog(`set no${opt}`);
         await op[opt].set(denops, false);
       }
       if (opt === "cursorline") {
-        cfgLine.enable = enable;
+        cfgLine.enable = enableParsed;
       }
       if (opt === "cursorcolumn") {
-        cfgColumn.enable = enable;
+        cfgColumn.enable = enableParsed;
       }
     },
 
     // deno-lint-ignore require-await
     async fixState(interval: unknown): Promise<void> {
-      assert(interval, is.Number);
+      const intervalParsed = z.number().parse(interval);
       setInterval(async () => {
         cfgLine.state = (await op.cursorline.get(denops)) ? true : false;
         cfgColumn.state = (await op.cursorcolumn.get(denops)) ? true : false;
         clog(
           `Fix state. line: [${cfgLine.state}], column: [${cfgColumn.state}]`,
         );
-      }, interval);
+      }, intervalParsed);
     },
   };
 
