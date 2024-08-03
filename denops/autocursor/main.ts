@@ -1,7 +1,7 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2024/07/28 17:36:11.
+// Last Change : 2024/08/04 00:24:15.
 // =============================================================================
 
 import * as autocmd from "jsr:@denops/std@7.0.3/autocmd";
@@ -11,11 +11,11 @@ import * as vars from "jsr:@denops/std@7.0.3/variable";
 import type { Denops } from "jsr:@denops/std@7.0.3";
 import { z } from "npm:zod@3.23.8";
 
-const version = "20240728_173611";
+const version = "20240804_002415";
 const lineWait = 100;
 const columnWait = 100;
 
-const LineOrColumnSchema = z.literal("cursorline").or(z.literal("cursorcolumn")).optional();
+const LineOrColumnSchema = z.literal("cursorline").or(z.literal("cursorcolumn"));
 type LineOrColumn = z.infer<typeof LineOrColumnSchema>;
 
 const AutocmdEventSchema = z.any().transform((v) => v as autocmd.AutocmdEvent);
@@ -28,7 +28,7 @@ type Event = z.infer<typeof EventSchema>;
 
 const CursorSchema = z.object({
   enable: z.boolean(),
-  option: LineOrColumnSchema,
+  option: LineOrColumnSchema.optional(),
   state: z.boolean().default(false),
   events: z.array(EventSchema),
 });
