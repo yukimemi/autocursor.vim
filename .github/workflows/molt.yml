@@ -1,7 +1,7 @@
 # =============================================================================
 # File        : molt.yml
 # Author      : yukimemi
-# Last Change : 2024/08/03 20:01:50.
+# Last Change : 2024/08/04 00:02:46.
 # =============================================================================
 
 name: molt
@@ -26,6 +26,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - run: deno task ci
       - uses: hasundue/molt-action@v1-rc
         with:
           labels: automerge
