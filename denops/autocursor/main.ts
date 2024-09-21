@@ -4,11 +4,11 @@
 // Last Change : 2024/08/04 00:24:15.
 // =============================================================================
 
-import * as autocmd from "jsr:@denops/std@7.0.3/autocmd";
-import * as helper from "jsr:@denops/std@7.0.3/helper";
-import * as op from "jsr:@denops/std@7.0.3/option";
-import * as vars from "jsr:@denops/std@7.0.3/variable";
-import type { Denops } from "jsr:@denops/std@7.0.3";
+import * as autocmd from "jsr:@denops/std@7.1.1/autocmd";
+import * as helper from "jsr:@denops/std@7.1.1/helper";
+import * as op from "jsr:@denops/std@7.1.1/option";
+import * as vars from "jsr:@denops/std@7.1.1/variable";
+import type { Denops } from "jsr:@denops/std@7.1.1";
 import { z } from "npm:zod@3.23.8";
 
 const version = "20240804_002415";
