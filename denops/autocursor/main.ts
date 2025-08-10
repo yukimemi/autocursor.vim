@@ -9,7 +9,7 @@ import * as helper from "jsr:@denops/std@7.6.0/helper";
 import * as op from "jsr:@denops/std@7.6.0/option";
 import * as vars from "jsr:@denops/std@7.6.0/variable";
 import type { Denops } from "jsr:@denops/std@7.6.0";
-import { z } from "npm:zod@4.0.16";
+import { z } from "npm:zod@4.0.17";
 
 const version = "20240804_002415";
 const lineWait = 100;
