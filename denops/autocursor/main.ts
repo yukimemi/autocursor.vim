@@ -1,17 +1,17 @@
 // =============================================================================
 // File        : main.ts
 // Author      : yukimemi
-// Last Change : 2024/08/04 00:24:15.
+// Last Change : 2025/09/21 16:52:05.
 // =============================================================================
 
-import * as autocmd from "jsr:@denops/std@8.0.0/autocmd";
-import * as helper from "jsr:@denops/std@8.0.0/helper";
-import * as op from "jsr:@denops/std@8.0.0/option";
-import * as vars from "jsr:@denops/std@8.0.0/variable";
-import type { Denops } from "jsr:@denops/std@8.0.0";
-import { z } from "npm:zod@4.1.11";
+import * as autocmd from "@denops/std/autocmd";
+import * as helper from "@denops/std/helper";
+import * as op from "@denops/std/option";
+import * as vars from "@denops/std/variable";
+import type { Denops } from "@denops/std";
+import { z } from "zod";
 
-const version = "20240804_002415";
+const version = "20250921_165205";
 const lineWait = 100;
 const columnWait = 100;
 
